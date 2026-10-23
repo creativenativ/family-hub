@@ -175,7 +175,7 @@ struct ParsedEventRow: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 8) {
                     Image(systemName: event.category.icon)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color.themeAccent)
                     Text(event.title)
                         .font(.subheadline.weight(.semibold))
                 }
@@ -185,7 +185,7 @@ struct ParsedEventRow: View {
                         .font(.caption2.weight(.medium))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Color.accentColor.opacity(0.15))
+                        .background(Color.themeAccent.opacity(0.15))
                         .clipShape(Capsule())
 
                     if event.isAllDay {
@@ -207,7 +207,7 @@ struct ParsedEventRow: View {
                 }
             }
         }
-        .tint(.accentColor)
+        .tint(.themeAccent)
     }
 }
 

@@ -242,7 +242,7 @@ struct MealSlotRow: View {
                 Button(action: onSelectEmpty) {
                     Text("Add meal")
                         .font(.subheadline)
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Color.themeAccent)
                 }
                 .buttonStyle(.plain)
             }

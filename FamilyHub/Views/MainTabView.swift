@@ -91,6 +91,7 @@ struct MainTabView: View {
                     .zIndex(2)
             }
         }
+        .tint(ThemeStore.shared.accent)
         .onChange(of: selectedTab) { _, newTab in
             if newTab != .calendar, showingNotifications {
                 withAnimation(.spring(response: 0.42, dampingFraction: 0.86)) {

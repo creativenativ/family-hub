@@ -79,7 +79,7 @@ struct NotificationsPanel: View {
 
                     LinearGradient(
                         colors: [
-                            Color.accentColor.opacity(0.18),
+                            Color.themeAccent.opacity(0.18),
                             Color.white.opacity(0.08),
                             Color.clear,
                         ],
@@ -96,7 +96,7 @@ struct NotificationsPanel: View {
                             colors: [
                                 Color.white.opacity(0.55),
                                 Color.white.opacity(0.12),
-                                Color.accentColor.opacity(0.35),
+                                Color.themeAccent.opacity(0.35),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -119,7 +119,7 @@ struct NotificationsPanel: View {
         HStack(spacing: 10) {
             Image(systemName: "bell.fill")
                 .font(.title2)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(Color.themeAccent)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Notifications")
@@ -253,12 +253,7 @@ struct NotificationsLaunchButton: View {
                     .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
 
                 if pendingCount > 0 {
-                    Text("\(min(pendingCount, 9))\(pendingCount > 9 ? "+" : "")")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.red, in: Capsule())
+                    ThemeBadge(count: pendingCount, maximum: 9)
                         .offset(x: 4, y: -4)
                 }
             }
@@ -312,7 +307,7 @@ struct PendingImportCard: View {
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: item.category.icon)
                     .font(.title3)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(Color.themeAccent)
                     .frame(width: 32)
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -324,7 +319,7 @@ struct PendingImportCard: View {
                             .font(.caption2.weight(.semibold))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.accentColor.opacity(0.18))
+                            .background(Color.themeAccent.opacity(0.18))
                             .clipShape(Capsule())
 
                         Text(item.createdAt.formatted(date: .abbreviated, time: .shortened))

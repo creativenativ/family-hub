@@ -21,6 +21,8 @@ final class CalendarEvent {
     var linkedSourceEventID: UUID?
     var linkedSourceZoneName: String = ""
     var linkedSourceTribeName: String = ""
+    /// Personal color override for this event on this person's devices ("" = default).
+    var customColorHex: String = ""
 
     var assignedMember: FamilyMember?
 

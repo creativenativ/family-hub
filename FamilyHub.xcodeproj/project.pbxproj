@@ -66,6 +66,8 @@
 		FH00000100000000000000A4 /* TribeComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A4 /* TribeComposerView.swift */; };
 		FH000001000000000000002C /* FamilySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002D /* FamilySyncService.swift */; };
 		FH00000100000000000000A1 /* FamilySyncable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A1 /* FamilySyncable.swift */; };
+		FH00000100000000000000A5 /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A5 /* ThemeStore.swift */; };
+		FH00000100000000000000A6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A6 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -121,6 +123,8 @@
 		FH00000200000000000000A4 /* TribeComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TribeComposerView.swift; sourceTree = "<group>"; };
 		FH000002000000000000002D /* FamilySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySyncService.swift; sourceTree = "<group>"; };
 		FH00000200000000000000A1 /* FamilySyncable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySyncable.swift; sourceTree = "<group>"; };
+		FH00000200000000000000A5 /* ThemeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeStore.swift; sourceTree = "<group>"; };
+		FH00000200000000000000A6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FH0000020000000000000032 /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
 		FH0000020000000000000033 /* EventReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReminderService.swift; sourceTree = "<group>"; };
 		FH0000020000000000000034 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 				FH0000020000000000000011 /* FamilyMembersView.swift */,
 				FH0000020000000000000015 /* MemberEditorView.swift */,
 				FH00000200000000000000A2 /* TribeWheelView.swift */,
+				FH00000200000000000000A6 /* SettingsView.swift */,
 				FH00000200000000000000A3 /* TribeDetailView.swift */,
 				FH00000200000000000000A4 /* TribeComposerView.swift */,
 				FH0000020000000000000036 /* FamilyInviteComposerView.swift */,
@@ -295,6 +300,7 @@
 				FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */,
 				FH000002000000000000002D /* FamilySyncService.swift */,
 				FH00000200000000000000A1 /* FamilySyncable.swift */,
+				FH00000200000000000000A5 /* ThemeStore.swift */,
 				FH0000020000000000000031 /* BillScheduleService.swift */,
 				FH0000020000000000000032 /* NotificationPreferences.swift */,
 				FH0000020000000000000033 /* EventReminderService.swift */,
@@ -449,6 +455,8 @@
 				FH00000100000000000000A4 /* TribeComposerView.swift in Sources */,
 				FH000001000000000000002C /* FamilySyncService.swift in Sources */,
 				FH00000100000000000000A1 /* FamilySyncable.swift in Sources */,
+				FH00000100000000000000A5 /* ThemeStore.swift in Sources */,
+				FH00000100000000000000A6 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,6 +569,7 @@
 		FH00000A0000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconSage AppIconBrass AppIconLinen AppIconMidnight";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FamilyHub/FamilyHub.entitlements;
@@ -597,6 +606,7 @@
 		FH00000A0000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconSage AppIconBrass AppIconLinen AppIconMidnight";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FamilyHub/FamilyHub.entitlements;

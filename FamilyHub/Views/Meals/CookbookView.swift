@@ -87,7 +87,7 @@ struct CookbookView: View {
                                         .foregroundStyle(.green)
                                 } else {
                                     Image(systemName: "plus.circle")
-                                        .foregroundStyle(Color.accentColor)
+                                        .foregroundStyle(Color.themeAccent)
                                 }
                             }
                             .padding(.vertical, 4)

@@ -14,6 +14,17 @@ A native iOS tribe organizer for planning, scheduling, meal planning, grocery li
 - **Tribe Members** — Color-coded profiles for assigning events and chores
 - **iCloud Sync** — Private CloudKit sync across devices on the same Apple ID
 
+## Appearance & Settings
+
+Tap the **gear** at the top-left of the Tribe tab for Settings:
+
+- **Theme presets:** Hearth (default, a blend of the teal, forest, brass and cognac palettes), Lagoon & Brass, Sage Kitchen, and Classic.
+- **Custom colors** for buttons and highlights, the gradient blend, notification bubbles, today and the selected day, events, and chores. Pick from the palette swatches or any color.
+- **App icon:** Hearth (default), Brass, Linen, Midnight, or the original Sage.
+- **Per-item colors:** long-press any event or chore on the calendar → **Color…**. These are personal and aren't shared with the tribe.
+
+Theme colors live in `Services/ThemeStore.swift`. Use `ThemeStore.shared.accent` / `Color.themeAccent` instead of `Color.accentColor` in new views. App icons are in the asset catalog (`AppIcon`, `AppIconBrass`, `AppIconLinen`, `AppIconMidnight`, `AppIconSage`), and the alternates are listed in the `ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES` build setting.
+
 ## Requirements
 
 - Xcode 16+
@@ -62,7 +73,7 @@ Edits and deletions are detected automatically at sync time (each device remembe
 
 **Before shipping to TestFlight / App Store:** the new record types (`SharedMealPlan`, `SharedGroceryItem`, `SharedBudgetItem`, etc.) are created automatically in the CloudKit **Development** environment the first time they sync. Deploy the schema to **Production** in the CloudKit Console before releasing, or production builds won't be able to save them.
 
-**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, and `-startTab tribe` to open on the Tribe tab (Xcode → Product → Scheme → Edit Scheme → Arguments).
+**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, `-startTab tribe` to open on the Tribe tab, and `-showSettings` to open Settings (Xcode → Product → Scheme → Edit Scheme → Arguments).
 
 Test on **real devices** signed into iCloud (simulator sharing is unreliable). After upgrading, delete and reinstall if the store schema fails to migrate.
 

@@ -101,7 +101,7 @@ struct VoiceMemoBoardView: View {
                 filterChip(
                     title: "Everyone",
                     isSelected: filteredMemberID == nil,
-                    color: .accentColor
+                    color: .themeAccent
                 ) {
                     filteredMemberID = nil
                     filterRole = .involved
@@ -133,7 +133,7 @@ struct VoiceMemoBoardView: View {
                 filterChip(
                     title: role.label,
                     isSelected: filterRole == role,
-                    color: members.first(where: { $0.id == filteredMemberID })?.color ?? .accentColor
+                    color: members.first(where: { $0.id == filteredMemberID })?.color ?? .themeAccent
                 ) {
                     filterRole = role
                 }
@@ -225,7 +225,7 @@ struct VoiceMemoRow: View {
     }
 
     private var accentColor: Color {
-        memo.toMember?.color ?? memo.fromMember?.color ?? .accentColor
+        memo.toMember?.color ?? memo.fromMember?.color ?? .themeAccent
     }
 
     var body: some View {
@@ -262,7 +262,7 @@ struct VoiceMemoRow: View {
 
                     if !memo.isHeard {
                         Circle()
-                            .fill(Color.accentColor)
+                            .fill(Color.themeAccent)
                             .frame(width: 8, height: 8)
                     }
                 }

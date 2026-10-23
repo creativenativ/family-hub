@@ -36,7 +36,7 @@ struct TribeComposerView: View {
     @State private var mode: Mode = .create
     @State private var name = ""
     @State private var kind: TribeKind = .calendar
-    @State private var colorHex = MemberColor.blue.hex
+    @State private var colorHex = ThemeStore.swatches[1]
     @State private var inviteCode = ""
     @State private var errorMessage: String?
 
@@ -181,38 +181,12 @@ struct TribeComposerView: View {
     }
 }
 
-/// A row of preset colors for a tribe bubble.
+/// Theme swatches for a tribe bubble.
 struct TribeColorRow: View {
     @Binding var selectedHex: String
 
     var body: some View {
-        HStack(spacing: 10) {
-            ForEach(MemberColor.allCases) { option in
-                let isSelected = option.hex.caseInsensitiveCompare(selectedHex) == .orderedSame
-                Button {
-                    selectedHex = option.hex
-                } label: {
-                    Circle()
-                        .fill(Color(hex: option.hex) ?? .gray)
-                        .frame(width: 30, height: 30)
-                        .overlay {
-                            if isSelected {
-                                Image(systemName: "checkmark")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .overlay {
-                            Circle().strokeBorder(Color.primary.opacity(isSelected ? 0.4 : 0), lineWidth: 2)
-                        }
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(option.rawValue.capitalized)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 4)
+        SwatchGrid(selectedHex: selectedHex) { selectedHex = $0 }
     }
 }
 
@@ -226,7 +200,7 @@ enum DemoTribes {
               ((try? modelContext.fetchCount(FetchDescriptor<FamilyMembership>())) ?? 0) == 0
         else { return }
 
-        func tribe(_ name: String, kind: TribeKind, color: MemberColor, unread: Int, home: Bool = false) -> FamilyMembership {
+        func tribe(_ name: String, kind: TribeKind, color: String, unread: Int, home: Bool = false) -> FamilyMembership {
             let tribe = FamilyMembership(
                 familyName: name,
                 inviteCode: FamilyCloudService.makeInviteCode(),
@@ -237,17 +211,17 @@ enum DemoTribes {
                 kind: kind
             )
             tribe.isHome = home
-            tribe.colorHex = color.hex
+            tribe.colorHex = color
             tribe.unreadCount = unread
             modelContext.insert(tribe)
             return tribe
         }
 
-        _ = tribe("The Schwartzels", kind: .family, color: .green, unread: 0, home: true)
-        let work = tribe("Work", kind: .calendar, color: .blue, unread: 3)
-        let soccer = tribe("Soccer Club", kind: .calendar, color: .orange, unread: 1)
-        _ = tribe("Book Club", kind: .calendar, color: .purple, unread: 0)
-        _ = tribe("Grandparents", kind: .family, color: .pink, unread: 0)
+        _ = tribe("The Schwartzels", kind: .family, color: "#2A3723", unread: 0, home: true)
+        let work = tribe("Work", kind: .calendar, color: "#005667", unread: 3)
+        let soccer = tribe("Soccer Club", kind: .calendar, color: "#B78819", unread: 1)
+        _ = tribe("Book Club", kind: .calendar, color: "#9A6724", unread: 0)
+        _ = tribe("Grandparents", kind: .family, color: "#B9BBA8", unread: 0)
 
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())

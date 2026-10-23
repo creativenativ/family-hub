@@ -53,6 +53,8 @@ final class Chore {
     var cloudSynced: Bool = false
     var remindersEnabled: Bool = true
     var componentsData: Data = Data()
+    /// Personal color override on the calendar ("" = default).
+    var customColorHex: String = ""
 
     var assignedMember: FamilyMember?
 

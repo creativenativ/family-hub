@@ -119,11 +119,11 @@ struct ChoresView: View {
                         .font(.subheadline.weight(.medium))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(selectedMemberID == nil ? Color.accentColor.opacity(0.2) : Color(.secondarySystemBackground))
+                        .background(selectedMemberID == nil ? Color.themeAccent.opacity(0.2) : Color(.secondarySystemBackground))
                         .clipShape(Capsule())
                         .overlay {
                             Capsule()
-                                .strokeBorder(selectedMemberID == nil ? Color.accentColor : Color.clear, lineWidth: 2)
+                                .strokeBorder(selectedMemberID == nil ? Color.themeAccent : Color.clear, lineWidth: 2)
                         }
                 }
                 .buttonStyle(.plain)

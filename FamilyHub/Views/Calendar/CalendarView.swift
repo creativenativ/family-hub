@@ -35,8 +35,13 @@ struct CalendarBarItem: Identifiable {
     /// Set for events that belong to a tribe calendar other than home.
     var tribe: TribeTag? = nil
 
-    var color: Color {
-        member?.color ?? tribe?.color ?? Color(.systemGray3)
+    /// Personal color first, then the person, then the tribe, then the theme default.
+    @MainActor var color: Color {
+        let custom = event?.customColorHex ?? chore?.customColorHex ?? ""
+        if let customColor = Color(hex: custom) { return customColor }
+        if let member { return member.color }
+        if let tribe { return tribe.color }
+        return ThemeStore.shared.color(kind == .chore ? .chore : .event)
     }
 
     /// Name of the tribe a linked copy came from, e.g. "Work".
@@ -81,6 +86,7 @@ struct CalendarView: View {
     @State private var showingAddEvent = false
     @State private var showingImportEmail = false
     @State private var filteredMemberIDs: Set<UUID> = []
+    @State private var itemToColor: CalendarBarItem?
 
     private let calendar = Calendar.current
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
@@ -254,6 +260,15 @@ struct CalendarView: View {
             .sheet(isPresented: $showingAddEvent) {
                 AddEventView(selectedDate: selectedDate, members: members, tribes: memberships)
             }
+            .sheet(item: $itemToColor) { item in
+                ItemColorSheet(
+                    title: item.title,
+                    currentHex: item.event?.customColorHex ?? item.chore?.customColorHex ?? ""
+                ) { hex in
+                    item.event?.customColorHex = hex ?? ""
+                    item.chore?.customColorHex = hex ?? ""
+                }
+            }
             .sheet(isPresented: $showingImportEmail) {
                 ImportEmailView(members: members, referenceDate: selectedDate)
             }
@@ -350,6 +365,11 @@ struct CalendarView: View {
                             .contextMenu {
                                 if let event = item.event {
                                     shareMenu(for: event)
+                                }
+                                Button {
+                                    itemToColor = item
+                                } label: {
+                                    Label("Color…", systemImage: "paintpalette")
                                 }
                                 Button("Delete", role: .destructive) {
                                     deleteItem(item)
@@ -499,11 +519,11 @@ struct CalendarView: View {
                         .font(.subheadline.weight(.medium))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(filteredMemberIDs.isEmpty ? Color.accentColor.opacity(0.2) : Color(.secondarySystemBackground))
+                        .background(filteredMemberIDs.isEmpty ? Color.themeAccent.opacity(0.2) : Color(.secondarySystemBackground))
                         .clipShape(Capsule())
                         .overlay {
                             Capsule()
-                                .strokeBorder(filteredMemberIDs.isEmpty ? Color.accentColor : Color.clear, lineWidth: 2)
+                                .strokeBorder(filteredMemberIDs.isEmpty ? Color.themeAccent : Color.clear, lineWidth: 2)
                         }
                 }
                 .buttonStyle(.plain)
@@ -780,7 +800,7 @@ struct DayBoxCell: View {
                 if showTitle {
                     Text(item.title)
                         .font(.system(size: 7, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(item.color.contrastingText)
                         .lineLimit(1)
                         .padding(.horizontal, 4)
                 }
@@ -823,13 +843,13 @@ struct DayBoxCell: View {
 
     private var boxBackground: Color {
         if isSelected {
-            return Color.primary.opacity(0.1)
+            return ThemeStore.shared.color(.today).opacity(0.14)
         }
         return Color(.secondarySystemBackground)
     }
 
     private var borderColor: Color {
-        if isSelected || isToday { return .primary }
+        if isSelected || isToday { return ThemeStore.shared.color(.today) }
         return Color(.separator)
     }
 }

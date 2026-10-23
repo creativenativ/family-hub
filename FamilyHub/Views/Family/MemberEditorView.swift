@@ -84,7 +84,7 @@ struct MemberEditorView: View {
                     .font(.caption)
                     .foregroundStyle(.white)
                     .padding(6)
-                    .background(Color.accentColor)
+                    .background(Color.themeAccent)
                     .clipShape(Circle())
                     .offset(x: 4, y: 4)
             }

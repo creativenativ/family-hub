@@ -13,6 +13,16 @@ struct FamilyMembersView: View {
     @State private var composerKind: TribeKind?
     @State private var showingComposer = false
     @State private var acceptance = FamilyShareAcceptanceCenter.shared
+    @State private var showingSettings = Self.opensSettingsAtLaunch
+
+    /// Debug builds accept `-showSettings` at launch.
+    private static var opensSettingsAtLaunch: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-showSettings")
+        #else
+        false
+        #endif
+    }
 
     private var home: FamilyMembership? { FamilyMembership.home(in: memberships) }
     private var others: [FamilyMembership] { FamilyMembership.extras(in: memberships) }
@@ -98,6 +108,14 @@ struct FamilyMembersView: View {
             .listStyle(.insetGrouped)
             .navigationTitle("Tribe")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .accessibilityLabel("Settings")
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button {
@@ -123,6 +141,9 @@ struct FamilyMembersView: View {
             }
             .sheet(item: $memberToEdit) { member in
                 MemberEditorView(member: member)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
             }
             .sheet(isPresented: $showingComposer) {
                 TribeComposerView(initialKind: composerKind)
@@ -184,7 +205,7 @@ private struct TribeThreadRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Circle()
-                .fill(tribe.color)
+                .fill(tribe.color.gradient)
                 .frame(width: 40, height: 40)
                 .overlay {
                     Image(systemName: tribe.isHome ? "house.fill" : "calendar")
@@ -209,12 +230,7 @@ private struct TribeThreadRow: View {
                         .lineLimit(1)
                     Spacer()
                     if tribe.unreadCount > 0 {
-                        Text("\(tribe.unreadCount)")
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 2)
-                            .background(Capsule().fill(.red))
+                        ThemeBadge(count: tribe.unreadCount)
                     }
                 }
             }

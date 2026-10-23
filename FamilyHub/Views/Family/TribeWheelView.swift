@@ -69,10 +69,10 @@ struct TribeWheelView: View {
                         Circle()
                             .fill(Color(.secondarySystemBackground))
                         Circle()
-                            .strokeBorder(Color.primary.opacity(0.5), style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                            .strokeBorder(ThemeStore.shared.accentGradient, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
                         Image(systemName: "house.fill")
                             .font(.title)
-                            .foregroundStyle(Color.primary)
+                            .foregroundStyle(ThemeStore.shared.accentGradient)
                     }
                     .frame(width: centerSize, height: centerSize)
                     Text("Set up home")
@@ -164,12 +164,7 @@ struct TribeBubble: View {
                     .shadow(color: tribe.color.opacity(0.35), radius: 8, y: 4)
 
                 if tribe.unreadCount > 0 {
-                    Text(tribe.unreadCount > 99 ? "99+" : "\(tribe.unreadCount)")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(.red))
+                    ThemeBadge(count: tribe.unreadCount)
                         .offset(x: 4, y: -2)
                 }
             }
@@ -194,10 +189,10 @@ private struct AddTribeBubble: View {
                 Circle()
                     .fill(Color(.secondarySystemBackground))
                 Circle()
-                    .strokeBorder(Color.primary, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                    .strokeBorder(ThemeStore.shared.accentGradient, style: StrokeStyle(lineWidth: 2, dash: [5, 4]))
                 Image(systemName: "plus")
                     .font(.system(size: size * 0.32, weight: .semibold))
-                    .foregroundStyle(Color.primary)
+                    .foregroundStyle(ThemeStore.shared.accentGradient)
             }
             .frame(width: size, height: size)
             Text("Add")

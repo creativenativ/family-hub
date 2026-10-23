@@ -8,6 +8,8 @@ struct FamilyHubApp: App {
 
     init() {
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        // Loads the saved theme and styles UIKit pieces (tab badges) before any view exists.
+        _ = ThemeStore.shared
     }
 
     var sharedModelContainer: ModelContainer = {

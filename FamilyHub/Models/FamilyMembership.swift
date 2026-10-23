@@ -120,13 +120,13 @@ final class FamilyMembership {
         else { return }
         oldest.isHome = true
         if oldest.colorHex.isEmpty {
-            oldest.colorHex = MemberColor.green.hex
+            oldest.colorHex = "#2A3723"
         }
         try? modelContext.save()
     }
 
     private static func defaultColorHex(for seed: String) -> String {
-        let palette = MemberColor.allCases.map(\.hex)
+        let palette = ["#005667", "#B78819", "#2A3723", "#9A6724", "#243F46", "#DCBC98", "#B9BBA8"]
         let sum = seed.unicodeScalars.reduce(0) { $0 + Int($1.value) }
         return palette[sum % palette.count]
     }
