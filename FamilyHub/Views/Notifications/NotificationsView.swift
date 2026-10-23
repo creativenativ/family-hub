@@ -124,9 +124,13 @@ struct NotificationsPanel: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Notifications")
                     .font(.title3.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Text(pendingImports.isEmpty ? "All clear" : "\(pendingImports.count) awaiting approval")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
 
             Spacer(minLength: 8)
@@ -134,12 +138,12 @@ struct NotificationsPanel: View {
             Button {
                 showingSettings = true
             } label: {
-                Label("Settings", systemImage: "slider.horizontal.3")
-                    .font(.body.weight(.semibold))
-                    .labelStyle(.titleAndIcon)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color.primary.opacity(0.08), in: Capsule())
+                // Icon only: a text label doesn't fit beside the title on narrow phones.
+                Image(systemName: "slider.horizontal.3")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.themeAccent)
+                    .frame(width: 34, height: 34)
+                    .background(Color.primary.opacity(0.08), in: Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Notification settings")
@@ -149,6 +153,8 @@ struct NotificationsPanel: View {
                     declineAll()
                 }
                 .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .fixedSize()
             }
 
             Button {

@@ -73,7 +73,7 @@ Edits and deletions are detected automatically at sync time (each device remembe
 
 **Before shipping to TestFlight / App Store:** the new record types (`SharedMealPlan`, `SharedGroceryItem`, `SharedBudgetItem`, etc.) are created automatically in the CloudKit **Development** environment the first time they sync. Deploy the schema to **Production** in the CloudKit Console before releasing, or production builds won't be able to save them.
 
-**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, `-startTab tribe` to open on the Tribe tab, and `-showSettings` to open Settings (Xcode → Product → Scheme → Edit Scheme → Arguments).
+**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, `-startTab tribe` to open on the Tribe tab, `-showSettings` to open Settings, and `-showNotifications` to open the notifications panel (Xcode → Product → Scheme → Edit Scheme → Arguments).
 
 Test on **real devices** signed into iCloud (simulator sharing is unreliable). After upgrading, delete and reinstall if the store schema fails to migrate.
 

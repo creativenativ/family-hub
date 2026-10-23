@@ -32,7 +32,16 @@ struct MainTabView: View {
         #endif
         return .calendar
     }
-    @State private var showingNotifications = false
+    @State private var showingNotifications = Self.opensNotificationsAtLaunch
+
+    /// Debug builds accept `-showNotifications` at launch.
+    private static var opensNotificationsAtLaunch: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-showNotifications")
+        #else
+        false
+        #endif
+    }
 
     private var unreadTribeCount: Int { memberships.reduce(0) { $0 + $1.unreadCount } }
     private var showsNotificationBell: Bool { selectedTab == .calendar }
