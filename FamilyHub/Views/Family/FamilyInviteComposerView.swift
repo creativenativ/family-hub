@@ -33,6 +33,10 @@ struct FamilyInviteComposerView: View {
     @State private var recipientContact = ""
     @State private var errorMessage: String?
 
+    init(preselectedMembershipID: UUID? = nil) {
+        _selectedMembershipID = State(initialValue: preselectedMembershipID)
+    }
+
     private var selectedMembership: FamilyMembership? {
         if let selectedMembershipID {
             return memberships.first { $0.id == selectedMembershipID }

@@ -26,7 +26,7 @@ enum FamilyCloudError: LocalizedError {
         case .iCloudUnavailable:
             return "Sign in to iCloud in Settings to create or join a shared tribe."
         case .alreadyInFamily:
-            return "This device is already in a shared tribe. Leave it before joining another."
+            return "You're already in this tribe."
         case .notInFamily:
             return "You are not in a shared tribe yet."
         case .invalidInviteCode:
@@ -85,7 +85,7 @@ final class FamilyCloudService {
 
     // MARK: - Create
 
-    func createFamily(named name: String) async throws -> FamilyMembership {
+    func createFamily(named name: String, kind: TribeKind = .family) async throws -> FamilyMembership {
         try await ensureiCloud()
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
@@ -107,6 +107,7 @@ final class FamilyCloudService {
         root["name"] = trimmed as CKRecordValue
         root["inviteCode"] = inviteCode as CKRecordValue
         root["createdAt"] = Date() as CKRecordValue
+        root["kind"] = kind.rawValue as CKRecordValue
 
         let share = CKShare(rootRecord: root)
         share[CKShare.SystemFieldKey.title] = "\(trimmed) · Tribe Time" as CKRecordValue
@@ -122,7 +123,8 @@ final class FamilyCloudService {
             inviteCode: inviteCode,
             familyName: trimmed,
             shareURL: shareURL,
-            zoneName: zoneName
+            zoneName: zoneName,
+            kind: kind
         )
 
         let userRecordID = try await container.userRecordID()
@@ -132,7 +134,8 @@ final class FamilyCloudService {
             shareURLString: shareURL.absoluteString,
             zoneName: zoneName,
             zoneOwnerName: userRecordID.recordName,
-            isOwner: true
+            isOwner: true,
+            kind: kind
         )
 
         await refreshParticipants(for: membership)
@@ -168,6 +171,7 @@ final class FamilyCloudService {
 
         let familyName = (invite["familyName"] as? String) ?? "Tribe"
         let zoneName = (invite["zoneName"] as? String) ?? ""
+        let kind = (invite["kind"] as? String).flatMap(TribeKind.init) ?? .family
 
         let metadata = try await shareMetadata(for: shareURL)
         _ = try await container.accept(metadata)
@@ -185,7 +189,8 @@ final class FamilyCloudService {
             shareURLString: shareURL.absoluteString,
             zoneName: resolvedZoneName,
             zoneOwnerName: ownerName,
-            isOwner: false
+            isOwner: false,
+            kind: kind
         )
 
         await refreshParticipants(for: membership)
@@ -213,10 +218,12 @@ final class FamilyCloudService {
         }
 
         var inviteCode = ""
+        var kind = TribeKind.family
         if let rootID {
             if let root = try? await sharedDB.record(for: rootID) {
                 inviteCode = (root["inviteCode"] as? String) ?? ""
                 familyName = (root["name"] as? String) ?? familyName
+                kind = (root["kind"] as? String).flatMap(TribeKind.init) ?? .family
             }
         }
 
@@ -228,7 +235,8 @@ final class FamilyCloudService {
             shareURLString: shareURL,
             zoneName: zoneName,
             zoneOwnerName: ownerName,
-            isOwner: false
+            isOwner: false,
+            kind: kind
         )
         await refreshParticipants(for: membership)
         return membership
@@ -322,7 +330,8 @@ final class FamilyCloudService {
         inviteCode: String,
         familyName: String,
         shareURL: URL,
-        zoneName: String
+        zoneName: String,
+        kind: TribeKind
     ) async throws {
         let recordID = CKRecord.ID(recordName: Self.publicRecordName(for: inviteCode))
         let record = CKRecord(recordType: inviteRecordType, recordID: recordID)
@@ -330,6 +339,7 @@ final class FamilyCloudService {
         record["familyName"] = familyName as CKRecordValue
         record["shareURL"] = shareURL.absoluteString as CKRecordValue
         record["zoneName"] = zoneName as CKRecordValue
+        record["kind"] = kind.rawValue as CKRecordValue
         record["createdAt"] = Date() as CKRecordValue
         _ = try await publicDB.save(record)
     }

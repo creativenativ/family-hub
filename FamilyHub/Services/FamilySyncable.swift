@@ -192,7 +192,13 @@ extension CalendarEvent: FamilySyncable {
         fields.set("isAllDay", isAllDay)
         fields.set("location", location)
         fields.set("notificationsEnabled", notificationsEnabled)
-        fields.set("assignedMemberID", assignedMember?.id)
+        fields.set("linkedSourceEventID", linkedSourceEventID)
+        fields.set("linkedSourceZoneName", linkedSourceZoneName)
+        fields.set("linkedSourceTribeName", linkedSourceTribeName)
+        // Profiles only exist in the home tribe; leave other tribes' assignments untouched.
+        if tribeZoneName.isEmpty {
+            fields.set("assignedMemberID", assignedMember?.id)
+        }
     }
 
     func applySyncFields(from record: SyncRecordReader, lookup: SyncLookup) {
@@ -203,7 +209,12 @@ extension CalendarEvent: FamilySyncable {
         isAllDay = record.bool("isAllDay") ?? isAllDay
         location = record.string("location") ?? ""
         notificationsEnabled = record.bool("notificationsEnabled") ?? notificationsEnabled
-        assignedMember = lookup.member(record.uuid("assignedMemberID"))
+        linkedSourceEventID = record.uuid("linkedSourceEventID")
+        linkedSourceZoneName = record.string("linkedSourceZoneName") ?? ""
+        linkedSourceTribeName = record.string("linkedSourceTribeName") ?? ""
+        if tribeZoneName.isEmpty {
+            assignedMember = lookup.member(record.uuid("assignedMemberID"))
+        }
     }
 }
 

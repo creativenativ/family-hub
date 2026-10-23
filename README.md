@@ -44,21 +44,25 @@ A native iOS tribe organizer for planning, scheduling, meal planning, grocery li
 
 Delete the old local-only install of the app, then reinstall. Switching from a local store to CloudKit uses a new persistent store; old on-device data will not carry over automatically.
 
-## Shared Tribe (Create / Invite / Join)
+## Tribes (Create / Invite / Join)
 
-On the **Tribe** tab:
+The **Tribe** tab shows a spinning wheel of bubbles: your **home tribe** in the center, and every other tribe calendar you belong to orbiting it. Tap **+** to create or join one. Below the wheel, tribes are listed like message threads, with the next event and a badge for new events.
 
-1. **Create shared tribe** — generates an invite code like `AB3K-9XP2`
-2. **Share** the code or invite link with relatives
-3. They open **Tribe Time** → **Join with invite code** (each person keeps their own Apple ID)
+- **Home tribe** (one per device) shares everything: calendar, chores, meals, groceries, budget, profiles and the rest.
+- **Tribe calendars** (as many as you like: work, a team, a club) share **calendar events only**. Anyone with Tribe Time and an Apple ID can join with the invite code or link.
+- A family-type tribe joined while you already have a home is treated as calendar-only on your device.
 
-This uses **CloudKit Sharing**. Joining connects everyone’s Apple IDs to the same shared tribe.
+**Calendar:** chips at the top switch each tribe on or off, and each tribe's events show in its color. Long-press an event → **Share to…** to put a *linked* copy on another tribe calendar. Only that event is shared, and the copy follows the original's time and details. Copies show a "From Work" badge. If the original is deleted, the copy is removed. If you leave the source tribe, the copy stays as a normal event.
 
-**What syncs across the tribe:** everything — profiles, calendar events, chores, recipes, meal plans, favorite week plans, groceries, household needs, wish lists, budget items and expenses, income, recurring bills, voice memos, and email imports. Sync runs when you open the app, return to it, a few seconds after you make a change, or when you tap **Sync now** on the Tribe tab.
+Under the hood each tribe is its own CloudKit zone shared with `CKShare`. The tribe type is stored as `kind` on the zone's root record and on the public invite record.
+
+**What syncs in the home tribe:** everything — profiles, calendar events, chores, recipes, meal plans, favorite week plans, groceries, household needs, wish lists, budget items and expenses, income, recurring bills, voice memos, and email imports. Sync runs when you open the app, return to it, a few seconds after you make a change, or when you tap **Sync now** on the Tribe tab.
 
 Edits and deletions are detected automatically at sync time (each device remembers a fingerprint of what it last synced), so new screens don't need to call any sync API. To add a new synced model, give it `modifiedAt` / `cloudSynced` fields, conform it to `FamilySyncable` in `Services/FamilySyncable.swift`, and add it to the `entities` list in `FamilySyncService`.
 
 **Before shipping to TestFlight / App Store:** the new record types (`SharedMealPlan`, `SharedGroceryItem`, `SharedBudgetItem`, etc.) are created automatically in the CloudKit **Development** environment the first time they sync. Deploy the schema to **Production** in the CloudKit Console before releasing, or production builds won't be able to save them.
+
+**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, and `-startTab tribe` to open on the Tribe tab (Xcode → Product → Scheme → Edit Scheme → Arguments).
 
 Test on **real devices** signed into iCloud (simulator sharing is unreliable). After upgrading, delete and reinstall if the store schema fails to migrate.
 

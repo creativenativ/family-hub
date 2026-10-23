@@ -8,6 +8,12 @@ enum CalendarSpanSegment {
     case end
 }
 
+/// Name and color of a non-home tribe calendar, for labeling its events.
+struct TribeTag {
+    let name: String
+    let color: Color
+}
+
 /// Unified item shown as a color bar on the calendar.
 struct CalendarBarItem: Identifiable {
     enum Kind {
@@ -26,9 +32,17 @@ struct CalendarBarItem: Identifiable {
     let spanSegment: CalendarSpanSegment
     let lane: Int
     let isMultiDay: Bool
+    /// Set for events that belong to a tribe calendar other than home.
+    var tribe: TribeTag? = nil
 
     var color: Color {
-        member?.color ?? Color(.systemGray3)
+        member?.color ?? tribe?.color ?? Color(.systemGray3)
+    }
+
+    /// Name of the tribe a linked copy came from, e.g. "Work".
+    var linkedFrom: String? {
+        guard let event, event.linkedSourceEventID != nil, !event.linkedSourceTribeName.isEmpty else { return nil }
+        return event.linkedSourceTribeName
     }
 
     var kindLabel: String {
@@ -60,6 +74,7 @@ struct CalendarView: View {
     @Query(sort: \CalendarEvent.startDate) private var events: [CalendarEvent]
     @Query(sort: \Chore.dueDate) private var chores: [Chore]
     @Query(sort: \FamilyMember.name) private var members: [FamilyMember]
+    @Query private var memberships: [FamilyMembership]
 
     @State private var displayedMonth = Date()
     @State private var selectedDate = Date()
@@ -76,12 +91,39 @@ struct CalendarView: View {
         CalendarSpanLayout.build(
             events: filteredEvents,
             chores: filteredChores,
-            monthDays: monthDays.compactMap { $0 }
+            monthDays: monthDays.compactMap { $0 },
+            tribeTags: tribeTags
         )
     }
 
+    private var homeTribe: FamilyMembership? { FamilyMembership.home(in: memberships) }
+    private var otherTribes: [FamilyMembership] {
+        FamilyMembership.extras(in: memberships).sorted {
+            $0.familyName.localizedCaseInsensitiveCompare($1.familyName) == .orderedAscending
+        }
+    }
+
+    private var tribeTags: [String: TribeTag] {
+        Dictionary(otherTribes.map { ($0.zoneName, TribeTag(name: $0.familyName, color: $0.color)) },
+                   uniquingKeysWith: { first, _ in first })
+    }
+
+    /// Tribe calendars currently switched on ("" = home).
+    private var visibleZoneKeys: Set<String> {
+        var keys = Set(otherTribes.filter(\.showOnCalendar).map(\.zoneName))
+        if homeTribe?.showOnCalendar ?? true { keys.insert("") }
+        return keys
+    }
+
+    private var showsHomeItems: Bool { visibleZoneKeys.contains("") }
+
     private var filteredEvents: [CalendarEvent] {
-        events.filter { event in
+        let visible = visibleZoneKeys
+        let shownIDs = Set(events.filter { visible.contains($0.tribeZoneName) }.map(\.id))
+        return events.filter { event in
+            guard visible.contains(event.tribeZoneName) else { return false }
+            // A shared copy is redundant when its original is on screen too.
+            if let sourceID = event.linkedSourceEventID, shownIDs.contains(sourceID) { return false }
             guard !filteredMemberIDs.isEmpty else { return true }
             guard let memberID = event.assignedMember?.id else { return true }
             return filteredMemberIDs.contains(memberID)
@@ -90,7 +132,7 @@ struct CalendarView: View {
 
     private var filteredChores: [Chore] {
         chores.filter { chore in
-            guard !chore.isCompleted else { return false }
+            guard showsHomeItems, !chore.isCompleted else { return false }
             guard !filteredMemberIDs.isEmpty else { return true }
             guard let memberID = chore.assignedMember?.id else { return true }
             return filteredMemberIDs.contains(memberID)
@@ -135,7 +177,12 @@ struct CalendarView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
-                    if !members.isEmpty {
+                    if !otherTribes.isEmpty {
+                        tribeFilterBar
+                        Divider()
+                    }
+
+                    if !members.isEmpty && showsHomeItems {
                         memberFilterBar
                         Divider()
                     }
@@ -205,7 +252,7 @@ struct CalendarView: View {
                 }
             }
             .sheet(isPresented: $showingAddEvent) {
-                AddEventView(selectedDate: selectedDate, members: members)
+                AddEventView(selectedDate: selectedDate, members: members, tribes: memberships)
             }
             .sheet(isPresented: $showingImportEmail) {
                 ImportEmailView(members: members, referenceDate: selectedDate)
@@ -301,6 +348,9 @@ struct CalendarView: View {
                     ForEach(itemsForSelectedDate) { item in
                         CalendarBarRow(item: item)
                             .contextMenu {
+                                if let event = item.event {
+                                    shareMenu(for: event)
+                                }
                                 Button("Delete", role: .destructive) {
                                     deleteItem(item)
                                 }
@@ -325,7 +375,119 @@ struct CalendarView: View {
         }
     }
 
+    // MARK: - Sharing between tribes
+
+    /// Tribes this event could be shared into: every calendar except its own.
+    private func shareTargets(for event: CalendarEvent) -> [(key: String, name: String)] {
+        var targets: [(key: String, name: String)] = []
+        if !event.tribeZoneName.isEmpty {
+            targets.append(("", homeTribe?.familyName ?? "My calendar"))
+        }
+        for tribe in otherTribes where tribe.zoneName != event.tribeZoneName {
+            targets.append((tribe.zoneName, tribe.familyName))
+        }
+        return targets
+    }
+
+    @ViewBuilder
+    private func shareMenu(for event: CalendarEvent) -> some View {
+        let targets = shareTargets(for: event)
+        if !targets.isEmpty {
+            Menu {
+                ForEach(targets, id: \.key) { target in
+                    let alreadyShared = events.contains {
+                        $0.linkedSourceEventID == event.id && $0.tribeZoneName == target.key
+                    }
+                    Button {
+                        share(event, toZoneKey: target.key)
+                    } label: {
+                        Label(target.name, systemImage: alreadyShared ? "checkmark" : "calendar.badge.plus")
+                    }
+                    .disabled(alreadyShared)
+                }
+            } label: {
+                Label("Share to…", systemImage: "arrowshape.turn.up.right")
+            }
+        }
+    }
+
+    /// Puts a linked copy of `event` on another tribe calendar. Only that one event is shared;
+    /// the copy keeps following the original's time and details.
+    private func share(_ event: CalendarEvent, toZoneKey zoneKey: String) {
+        let sourceTribe = event.tribeZoneName.isEmpty
+            ? homeTribe
+            : memberships.first { $0.zoneName == event.tribeZoneName }
+        let copy = CalendarEvent(
+            title: event.title,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            isAllDay: event.isAllDay,
+            notes: event.notes,
+            location: event.location,
+            assignedMember: zoneKey.isEmpty ? event.assignedMember : nil,
+            notificationsEnabled: event.notificationsEnabled
+        )
+        copy.tribeZoneName = zoneKey
+        copy.linkedSourceEventID = event.id
+        copy.linkedSourceZoneName = sourceTribe?.zoneName ?? ""
+        copy.linkedSourceTribeName = sourceTribe?.familyName ?? "My calendar"
+        modelContext.insert(copy)
+    }
+
     // MARK: - Filter bar
+
+    private var tribeFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                tribeChip(
+                    name: homeTribe?.familyName ?? "My calendar",
+                    color: homeTribe?.color ?? .green,
+                    systemImage: "house.fill",
+                    isOn: showsHomeItems
+                ) {
+                    homeTribe?.showOnCalendar.toggle()
+                }
+                .disabled(homeTribe == nil)
+
+                ForEach(otherTribes, id: \.id) { tribe in
+                    tribeChip(
+                        name: tribe.familyName,
+                        color: tribe.color,
+                        systemImage: "calendar",
+                        isOn: tribe.showOnCalendar
+                    ) {
+                        tribe.showOnCalendar.toggle()
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.systemBackground))
+    }
+
+    private func tribeChip(
+        name: String,
+        color: Color,
+        systemImage: String,
+        isOn: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Label(name, systemImage: systemImage)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .foregroundStyle(isOn ? .white : .primary)
+                .background(isOn ? color : Color(.secondarySystemBackground))
+                .clipShape(Capsule())
+                .overlay {
+                    Capsule().strokeBorder(color, lineWidth: isOn ? 0 : 1.5)
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(isOn ? "Shown" : "Hidden")
+    }
 
     private var memberFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -390,7 +552,8 @@ enum CalendarSpanLayout {
     static func build(
         events: [CalendarEvent],
         chores: [Chore],
-        monthDays: [Date]
+        monthDays: [Date],
+        tribeTags: [String: TribeTag] = [:]
     ) -> [Date: [CalendarBarItem]] {
         let calendar = Calendar.current
         var result: [Date: [CalendarBarItem]] = [:]
@@ -442,7 +605,8 @@ enum CalendarSpanLayout {
                     chore: nil,
                     spanSegment: segment,
                     lane: lane,
-                    isMultiDay: multi
+                    isMultiDay: multi,
+                    tribe: tribeTags[event.tribeZoneName]
                 )
                 result[day, default: []].append(item)
             }
@@ -652,21 +816,20 @@ struct DayBoxCell: View {
         }
     }
 
+    // The app accent is white in light mode, so selection uses the primary color.
     private var dayNumberColor: Color {
-        if isSelected { return .accentColor }
-        if isToday { return .accentColor }
-        return .primary
+        .primary
     }
 
     private var boxBackground: Color {
         if isSelected {
-            return Color.accentColor.opacity(0.12)
+            return Color.primary.opacity(0.1)
         }
         return Color(.secondarySystemBackground)
     }
 
     private var borderColor: Color {
-        if isSelected { return .accentColor }
+        if isSelected || isToday { return .primary }
         return Color(.separator)
     }
 }
@@ -717,6 +880,21 @@ struct CalendarBarRow: View {
                         Text(item.subtitle)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+
+                    if item.tribe != nil || item.linkedFrom != nil {
+                        HStack(spacing: 6) {
+                            if let tribe = item.tribe {
+                                Label(tribe.name, systemImage: "calendar")
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(tribe.color)
+                            }
+                            if let source = item.linkedFrom {
+                                Label("From \(source)", systemImage: "link")
+                                    .font(.caption2.weight(.medium))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
 
                     if let member = item.member {

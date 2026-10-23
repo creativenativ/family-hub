@@ -15,6 +15,12 @@ final class CalendarEvent {
     var cloudSynced: Bool = false
     /// When false, skip calendar push notifications (e.g. bill-linked events use bill reminders).
     var notificationsEnabled: Bool = true
+    /// Which tribe calendar this event belongs to: "" for home, otherwise the tribe's zone name.
+    var tribeZoneName: String = ""
+    /// Set on a copy shared from another tribe; the copy follows changes to the original.
+    var linkedSourceEventID: UUID?
+    var linkedSourceZoneName: String = ""
+    var linkedSourceTribeName: String = ""
 
     var assignedMember: FamilyMember?
 

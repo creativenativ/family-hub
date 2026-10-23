@@ -7,6 +7,7 @@ struct AddEventView: View {
 
     let selectedDate: Date
     let members: [FamilyMember]
+    let tribes: [FamilyMembership]
 
     @State private var title = ""
     @State private var notes = ""
@@ -15,10 +16,13 @@ struct AddEventView: View {
     @State private var endDate: Date
     @State private var isAllDay = false
     @State private var selectedMember: FamilyMember?
+    /// "" = home calendar, otherwise a tribe's zone name.
+    @State private var tribeZoneName = ""
 
-    init(selectedDate: Date, members: [FamilyMember]) {
+    init(selectedDate: Date, members: [FamilyMember], tribes: [FamilyMembership] = []) {
         self.selectedDate = selectedDate
         self.members = members
+        self.tribes = tribes
         let defaultStart = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: selectedDate) ?? selectedDate
         let defaultEnd = Calendar.current.date(bySettingHour: 10, minute: 0, second: 0, of: selectedDate) ?? selectedDate
         _startDate = State(initialValue: defaultStart)
@@ -42,6 +46,22 @@ struct AddEventView: View {
                     }
                 }
 
+                if !otherTribes.isEmpty {
+                    Section {
+                        Picker("Calendar", selection: $tribeZoneName) {
+                            Text(homeName).tag("")
+                            ForEach(otherTribes, id: \.id) { tribe in
+                                Text(tribe.familyName).tag(tribe.zoneName)
+                            }
+                        }
+                    } footer: {
+                        if !tribeZoneName.isEmpty {
+                            Text("Everyone in this tribe will see the event. Nothing from your home calendar is shared.")
+                        }
+                    }
+                }
+
+                if tribeZoneName.isEmpty {
                 Section("Assign To") {
                     if members.isEmpty {
                         Text("Add tribe members in the Tribe tab to assign events.")
@@ -50,6 +70,7 @@ struct AddEventView: View {
                     } else {
                         memberAssignmentGrid
                     }
+                }
                 }
 
                 Section("Notes") {
@@ -69,6 +90,14 @@ struct AddEventView: View {
                 }
             }
         }
+    }
+
+    private var otherTribes: [FamilyMembership] {
+        FamilyMembership.extras(in: tribes).sorted { $0.familyName.localizedCaseInsensitiveCompare($1.familyName) == .orderedAscending }
+    }
+
+    private var homeName: String {
+        FamilyMembership.home(in: tribes)?.familyName ?? "My calendar"
     }
 
     private var memberAssignmentGrid: some View {
@@ -150,8 +179,9 @@ struct AddEventView: View {
             isAllDay: isAllDay,
             notes: notes,
             location: location,
-            assignedMember: selectedMember
+            assignedMember: tribeZoneName.isEmpty ? selectedMember : nil
         )
+        event.tribeZoneName = tribeZoneName
         modelContext.insert(event)
         Task {
             _ = await ChoreReminderService.requestPermission()

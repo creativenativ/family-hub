@@ -14,10 +14,27 @@ struct MainTabView: View {
     ) private var pendingImports: [PendingEmailImport]
     @Query private var memberships: [FamilyMembership]
 
-    @State private var selectedTab: MainTab = .calendar
+    @State private var selectedTab: MainTab = Self.initialTab
+
+    /// Debug builds accept `-startTab tribe` (or calendar, meals, household, chores) at launch.
+    private static var initialTab: MainTab {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let index = args.firstIndex(of: "-startTab"), index + 1 < args.count {
+            switch args[index + 1] {
+            case "meals": return .meals
+            case "household": return .household
+            case "chores": return .chores
+            case "tribe": return .family
+            default: break
+            }
+        }
+        #endif
+        return .calendar
+    }
     @State private var showingNotifications = false
 
-    private var membership: FamilyMembership? { memberships.first }
+    private var unreadTribeCount: Int { memberships.reduce(0) { $0 + $1.unreadCount } }
     private var showsNotificationBell: Bool { selectedTab == .calendar }
 
     var body: some View {
@@ -52,6 +69,7 @@ struct MainTabView: View {
                         Label("Tribe", systemImage: "person.3.fill")
                     }
                     .tag(MainTab.family)
+                    .badge(unreadTribeCount)
             }
 
             if showsNotificationBell {
@@ -80,21 +98,21 @@ struct MainTabView: View {
                 }
             }
         }
-        .task(id: membership?.id) {
-            guard let membership else { return }
-            _ = try? await FamilySyncService.shared.syncNow(membership: membership, modelContext: modelContext)
+        .task(id: memberships.map(\.id)) {
+            #if DEBUG
+            DemoTribes.seedIfRequested(in: modelContext)
+            #endif
+            FamilyMembership.migrateHomeIfNeeded(in: modelContext)
+            guard !memberships.isEmpty else { return }
+            _ = try? await FamilySyncService.shared.syncAll(modelContext: modelContext)
         }
         .onChange(of: scenePhase) { _, phase in
-            guard phase == .active, let membership else { return }
-            FamilySyncService.shared.scheduleSync(
-                membership: membership,
-                modelContext: modelContext,
-                delayNanoseconds: 500_000_000
-            )
+            guard phase == .active, !memberships.isEmpty else { return }
+            FamilySyncService.shared.scheduleSync(modelContext: modelContext, delayNanoseconds: 500_000_000)
         }
         .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { notification in
-            guard (notification.object as? ModelContext) === modelContext else { return }
-            FamilySyncService.shared.noteLocalSave(membership: membership, modelContext: modelContext)
+            guard (notification.object as? ModelContext) === modelContext, !memberships.isEmpty else { return }
+            FamilySyncService.shared.noteLocalSave(modelContext: modelContext)
         }
     }
 }
