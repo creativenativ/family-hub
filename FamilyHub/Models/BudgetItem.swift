@@ -43,6 +43,8 @@ final class BudgetItem {
     var monthStart: Date = Date()
     var notes: String = ""
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     @Relationship(deleteRule: .cascade, inverse: \BudgetExpense.budgetItem)
     var expenses: [BudgetExpense]?
@@ -63,6 +65,8 @@ final class BudgetItem {
         self.monthStart = Calendar.current.startOfDay(for: monthStart.startOfMonth)
         self.notes = notes
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var category: BudgetCategoryKind {

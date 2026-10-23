@@ -249,7 +249,7 @@ struct CalendarView: View {
 
     private var weekdayHeader: some View {
         LazyVGrid(columns: columns, spacing: 4) {
-            ForEach(weekdaySymbols, id: \.self) { symbol in
+            ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                 Text(symbol)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)

@@ -14,6 +14,8 @@ final class PendingEmailImport {
     var categoryRaw: String = EmailEventCategory.other.rawValue
     var sourceSnippet: String = ""
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
     var statusRaw: String = PendingImportStatus.pending.rawValue
 
     var suggestedMember: FamilyMember?
@@ -39,6 +41,8 @@ final class PendingEmailImport {
         self.categoryRaw = category.rawValue
         self.sourceSnippet = sourceSnippet
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
         self.statusRaw = PendingImportStatus.pending.rawValue
         self.suggestedMember = suggestedMember
     }

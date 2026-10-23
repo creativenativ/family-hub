@@ -8,6 +8,8 @@ final class VoiceMemo {
     var audioData: Data = Data()
     var durationSeconds: Double = 0
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
     var isHeard: Bool = false
     var scheduledEventID: UUID?
 
@@ -26,6 +28,8 @@ final class VoiceMemo {
         self.audioData = audioData
         self.durationSeconds = durationSeconds
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
         self.isHeard = false
         self.scheduledEventID = nil
         self.fromMember = fromMember

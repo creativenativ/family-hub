@@ -21,6 +21,8 @@ final class WishListItem {
     var link: String = ""
     var isPurchased: Bool = false
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     var forMember: FamilyMember?
 
@@ -40,6 +42,8 @@ final class WishListItem {
         self.link = link
         self.isPurchased = false
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
         self.forMember = forMember
     }
 

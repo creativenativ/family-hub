@@ -41,6 +41,8 @@ final class FavoriteWeeklyMealPlan {
     var name: String = ""
     var slotsData: Data = Data()
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
     var lastUsedAt: Date?
 
     init(name: String, slots: [FavoriteMealSlot] = []) {
@@ -48,6 +50,8 @@ final class FavoriteWeeklyMealPlan {
         self.name = name
         self.slotsData = (try? JSONEncoder().encode(slots)) ?? Data()
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
         self.lastUsedAt = nil
     }
 

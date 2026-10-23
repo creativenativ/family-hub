@@ -32,6 +32,8 @@ final class IncomeSource {
     var nextPayDate: Date = Date()
     var notes: String = ""
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     init(
         name: String,
@@ -47,6 +49,8 @@ final class IncomeSource {
         self.nextPayDate = Calendar.current.startOfDay(for: nextPayDate)
         self.notes = notes
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var frequency: MoneyFrequency {

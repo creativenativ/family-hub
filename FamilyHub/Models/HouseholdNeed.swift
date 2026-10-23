@@ -45,6 +45,8 @@ final class HouseholdNeed {
     var isPurchased: Bool = false
     var notes: String = ""
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     init(
         name: String,
@@ -63,6 +65,8 @@ final class HouseholdNeed {
         self.isPurchased = false
         self.notes = notes
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var category: HouseholdNeedCategory {

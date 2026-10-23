@@ -63,6 +63,7 @@
 		FH000001000000000000002A /* FamilyShareAcceptanceCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */; };
 		FH000001000000000000002B /* FamilySharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002C /* FamilySharingView.swift */; };
 		FH000001000000000000002C /* FamilySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002D /* FamilySyncService.swift */; };
+		FH00000100000000000000A1 /* FamilySyncable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A1 /* FamilySyncable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +116,7 @@
 		FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareAcceptanceCenter.swift; sourceTree = "<group>"; };
 		FH000002000000000000002C /* FamilySharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySharingView.swift; sourceTree = "<group>"; };
 		FH000002000000000000002D /* FamilySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySyncService.swift; sourceTree = "<group>"; };
+		FH00000200000000000000A1 /* FamilySyncable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySyncable.swift; sourceTree = "<group>"; };
 		FH0000020000000000000032 /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
 		FH0000020000000000000033 /* EventReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReminderService.swift; sourceTree = "<group>"; };
 		FH0000020000000000000034 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 				FH000002000000000000002A /* FamilyCloudService.swift */,
 				FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */,
 				FH000002000000000000002D /* FamilySyncService.swift */,
+				FH00000200000000000000A1 /* FamilySyncable.swift */,
 				FH0000020000000000000031 /* BillScheduleService.swift */,
 				FH0000020000000000000032 /* NotificationPreferences.swift */,
 				FH0000020000000000000033 /* EventReminderService.swift */,
@@ -437,6 +440,7 @@
 				FH000001000000000000002A /* FamilyShareAcceptanceCenter.swift in Sources */,
 				FH000001000000000000002B /* FamilySharingView.swift in Sources */,
 				FH000001000000000000002C /* FamilySyncService.swift in Sources */,
+				FH00000100000000000000A1 /* FamilySyncable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

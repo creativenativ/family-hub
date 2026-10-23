@@ -33,6 +33,8 @@ final class RecurringBill {
     var reminderLeadDays: Int = BillReminderLead.threeDays.rawValue
     var linkedEventID: UUID?
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     init(
         name: String,
@@ -57,6 +59,8 @@ final class RecurringBill {
         self.reminderLeadDays = reminderLead.rawValue
         self.linkedEventID = nil
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var frequency: MoneyFrequency {

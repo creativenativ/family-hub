@@ -92,6 +92,10 @@ struct MainTabView: View {
                 delayNanoseconds: 500_000_000
             )
         }
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { notification in
+            guard (notification.object as? ModelContext) === modelContext else { return }
+            FamilySyncService.shared.noteLocalSave(membership: membership, modelContext: modelContext)
+        }
     }
 }
 

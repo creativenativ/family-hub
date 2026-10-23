@@ -20,6 +20,27 @@ enum FamilySyncError: LocalizedError {
     }
 }
 
+/// One synced model type, with its static requirements captured so the engine can loop over all of them.
+private struct SyncEntity {
+    let recordType: String
+    let prefix: String
+    let fetchLocal: (ModelContext) throws -> [any FamilySyncable]
+    let makeNew: () -> any FamilySyncable
+
+    static func of<T: FamilySyncable>(_ type: T.Type) -> SyncEntity {
+        SyncEntity(
+            recordType: T.syncRecordType,
+            prefix: T.syncPrefix,
+            fetchLocal: { try $0.fetch(FetchDescriptor<T>()) },
+            makeNew: { T.makeForSync() }
+        )
+    }
+
+    func recordName(for id: UUID) -> String {
+        "\(prefix).\(id.uuidString)"
+    }
+}
+
 @MainActor
 @Observable
 final class FamilySyncService {
@@ -27,10 +48,24 @@ final class FamilySyncService {
 
     private let container = CKContainer(identifier: FamilyCloudService.containerIdentifier)
 
-    private let memberType = "SharedFamilyMember"
-    private let eventType = "SharedCalendarEvent"
-    private let choreType = "SharedChore"
-    private let recipeType = "SharedRecipe"
+    /// Order matters: members first so relationships resolve, budget items before their expenses.
+    private let entities: [SyncEntity] = [
+        .of(FamilyMember.self),
+        .of(CalendarEvent.self),
+        .of(Chore.self),
+        .of(Recipe.self),
+        .of(MealPlan.self),
+        .of(FavoriteWeeklyMealPlan.self),
+        .of(GroceryItem.self),
+        .of(HouseholdNeed.self),
+        .of(WishListItem.self),
+        .of(BudgetItem.self),
+        .of(BudgetExpense.self),
+        .of(IncomeSource.self),
+        .of(RecurringBill.self),
+        .of(VoiceMemo.self),
+        .of(PendingEmailImport.self),
+    ]
 
     var isSyncing = false
     var lastSyncAt: Date?
@@ -42,6 +77,10 @@ final class FamilySyncService {
     private var pendingDeletionRecordNames: Set<String> = Set(
         UserDefaults.standard.stringArray(forKey: "FamilySync.pendingDeletions") ?? []
     )
+    /// Record name → content fingerprint as of the last time this device synced it.
+    /// Lets sync notice local edits and deletions without every screen having to report them.
+    private var syncedFingerprints: [String: String] =
+        (UserDefaults.standard.dictionary(forKey: "FamilySync.fingerprints") as? [String: String]) ?? [:]
 
     private var privateDB: CKDatabase { container.privateCloudDatabase }
     private var sharedDB: CKDatabase { container.sharedCloudDatabase }
@@ -53,6 +92,10 @@ final class FamilySyncService {
 
     private func persistPendingDeletions() {
         UserDefaults.standard.set(Array(pendingDeletionRecordNames), forKey: "FamilySync.pendingDeletions")
+    }
+
+    private func persistFingerprints() {
+        UserDefaults.standard.set(syncedFingerprints, forKey: "FamilySync.fingerprints")
     }
 
     // MARK: - Public
@@ -71,20 +114,22 @@ final class FamilySyncService {
         }
     }
 
-    /// Call when leaving a hub so a later empty-zone sync cannot wipe local calendar data.
+    /// Call after the app's own context saves, so local edits reach the tribe quickly.
+    /// Saves made by sync itself are ignored.
+    func noteLocalSave(membership: FamilyMembership?, modelContext: ModelContext) {
+        guard !isSyncing, !isApplyingRemote else { return }
+        scheduleSync(membership: membership, modelContext: modelContext, delayNanoseconds: 3_000_000_000)
+    }
+
+    /// Call when leaving a hub so a later empty-zone sync cannot wipe local data.
     func detachLocalDataFromFamily(modelContext: ModelContext) throws {
-        for member in try modelContext.fetch(FetchDescriptor<FamilyMember>()) {
-            member.cloudSynced = false
+        for entity in entities {
+            for model in try entity.fetchLocal(modelContext) {
+                model.cloudSynced = false
+            }
         }
-        for event in try modelContext.fetch(FetchDescriptor<CalendarEvent>()) {
-            event.cloudSynced = false
-        }
-        for chore in try modelContext.fetch(FetchDescriptor<Chore>()) {
-            chore.cloudSynced = false
-        }
-        for recipe in try modelContext.fetch(FetchDescriptor<Recipe>()) {
-            recipe.cloudSynced = false
-        }
+        syncedFingerprints.removeAll()
+        persistFingerprints()
         pendingDeletionRecordNames.removeAll()
         persistPendingDeletions()
         lastResultSummary = nil
@@ -112,15 +157,23 @@ final class FamilySyncService {
             let zoneID = zoneID(for: membership)
             let database = database(for: membership)
 
-            let pulled = try await pull(database: database, zoneID: zoneID, modelContext: modelContext)
+            try seedFingerprintsIfNeeded(modelContext: modelContext)
+            try detectLocalChanges(modelContext: modelContext)
+
+            let remote = try await fetchRemote(database: database, zoneID: zoneID)
+            let pulled = try pull(remote: remote, modelContext: modelContext)
+            try modelContext.save()
+
             let pushed = try await push(
                 membership: membership,
+                remote: remote,
                 database: database,
                 zoneID: zoneID,
                 modelContext: modelContext
             )
 
             try modelContext.save()
+            persistFingerprints()
 
             let result = FamilySyncResult(pushed: pushed, pulled: pulled.applied, removedLocally: pulled.removed)
             lastSyncAt = Date()
@@ -128,6 +181,7 @@ final class FamilySyncService {
                 + (result.removedLocally > 0 ? " · removed \(result.removedLocally)" : "")
             return result
         } catch {
+            persistFingerprints()
             lastErrorMessage = error.localizedDescription
             throw error
         }
@@ -147,8 +201,46 @@ final class FamilySyncService {
         }
     }
 
-    private func recordID(prefix: String, id: UUID, zoneID: CKRecordZone.ID) -> CKRecord.ID {
-        CKRecord.ID(recordName: "\(prefix).\(id.uuidString)", zoneID: zoneID)
+    // MARK: - Local change detection
+
+    private func fingerprint(of model: any FamilySyncable) -> String {
+        var fields = SyncFields()
+        model.encodeSyncFields(into: &fields)
+        return fields.fingerprint
+    }
+
+    /// Before fingerprints existed, `cloudSynced` marked what had been uploaded. Adopt those once.
+    private func seedFingerprintsIfNeeded(modelContext: ModelContext) throws {
+        let key = "FamilySync.fingerprintsSeeded"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        for entity in entities {
+            for model in try entity.fetchLocal(modelContext) where model.cloudSynced {
+                syncedFingerprints[entity.recordName(for: model.id)] = fingerprint(of: model)
+            }
+        }
+        persistFingerprints()
+        UserDefaults.standard.set(true, forKey: key)
+    }
+
+    /// Stamps edited records as modified now and queues deletions for synced records that are gone locally.
+    private func detectLocalChanges(modelContext: ModelContext) throws {
+        for entity in entities {
+            let locals = try entity.fetchLocal(modelContext)
+            var localNames = Set<String>()
+            for model in locals {
+                let name = entity.recordName(for: model.id)
+                localNames.insert(name)
+                if let known = syncedFingerprints[name], known != fingerprint(of: model) {
+                    model.modifiedAt = Date()
+                }
+            }
+            let namePrefix = "\(entity.prefix)."
+            for name in syncedFingerprints.keys where name.hasPrefix(namePrefix) && !localNames.contains(name) {
+                pendingDeletionRecordNames.insert(name)
+                syncedFingerprints[name] = nil
+            }
+        }
+        persistPendingDeletions()
     }
 
     // MARK: - Pull
@@ -158,357 +250,129 @@ final class FamilySyncService {
         var removed: Int
     }
 
-    private func pull(
-        database: CKDatabase,
-        zoneID: CKRecordZone.ID,
-        modelContext: ModelContext
-    ) async throws -> PullOutcome {
+    /// Remote records keyed by record type, then by model ID.
+    private typealias RemoteSnapshot = [String: [UUID: CKRecord]]
+
+    private func fetchRemote(database: CKDatabase, zoneID: CKRecordZone.ID) async throws -> RemoteSnapshot {
+        var snapshot: RemoteSnapshot = [:]
+        for entity in entities {
+            let records = try await fetchAll(recordType: entity.recordType, database: database, zoneID: zoneID)
+            snapshot[entity.recordType] = Dictionary(
+                records.compactMap { record in uuid(from: record, prefix: entity.prefix).map { ($0, record) } },
+                uniquingKeysWith: { first, _ in first }
+            )
+        }
+        return snapshot
+    }
+
+    private func pull(remote: RemoteSnapshot, modelContext: ModelContext) throws -> PullOutcome {
         isApplyingRemote = true
         defer { isApplyingRemote = false }
 
-        let remoteMembers = try await fetchAll(recordType: memberType, database: database, zoneID: zoneID)
-        let remoteEvents = try await fetchAll(recordType: eventType, database: database, zoneID: zoneID)
-        let remoteChores = try await fetchAll(recordType: choreType, database: database, zoneID: zoneID)
-        let remoteRecipes = try await fetchAll(recordType: recipeType, database: database, zoneID: zoneID)
-
+        let lookup = SyncLookup(modelContext: modelContext)
         var applied = 0
-        applied += try applyMembers(remoteMembers, modelContext: modelContext)
-        applied += try applyEvents(remoteEvents, modelContext: modelContext)
-        applied += try applyChores(remoteChores, modelContext: modelContext)
-        applied += try applyRecipes(remoteRecipes, modelContext: modelContext)
+        var removed = 0
 
-        let removed = try removeOrphans(
-            remoteMembers: remoteMembers,
-            remoteEvents: remoteEvents,
-            remoteChores: remoteChores,
-            remoteRecipes: remoteRecipes,
-            modelContext: modelContext
-        )
+        for entity in entities {
+            lookup.invalidate()
+            let records = remote[entity.recordType] ?? [:]
+            var locals = Dictionary(
+                try entity.fetchLocal(modelContext).map { ($0.id, $0) },
+                uniquingKeysWith: { first, _ in first }
+            )
+
+            for (id, record) in records {
+                let name = entity.recordName(for: id)
+                // Deleted here but not yet pushed — don't resurrect it.
+                guard !pendingDeletionRecordNames.contains(name) else { continue }
+                let remoteModified = (record["modifiedAt"] as? Date) ?? .distantPast
+
+                let model: any FamilySyncable
+                if let local = locals[id] {
+                    guard remoteModified > local.modifiedAt else { continue }
+                    model = local
+                } else {
+                    model = entity.makeNew()
+                    model.id = id
+                    modelContext.insert(model)
+                    locals[id] = model
+                }
+                model.applySyncFields(from: SyncRecordReader(record: record), lookup: lookup)
+                model.createdAt = (record["createdAt"] as? Date) ?? model.createdAt
+                model.modifiedAt = remoteModified
+                model.cloudSynced = true
+                syncedFingerprints[name] = fingerprint(of: model)
+                applied += 1
+            }
+
+            // Synced before but gone from the zone: another member deleted it.
+            for (id, model) in locals where records[id] == nil {
+                let name = entity.recordName(for: id)
+                guard syncedFingerprints[name] != nil else { continue }
+                modelContext.delete(model)
+                syncedFingerprints[name] = nil
+                removed += 1
+            }
+        }
 
         return PullOutcome(applied: applied, removed: removed)
-    }
-
-    private func applyMembers(_ records: [CKRecord], modelContext: ModelContext) throws -> Int {
-        let locals = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<FamilyMember>())).map { ($0.id, $0) })
-        var applied = 0
-        for record in records {
-            guard let id = uuid(from: record, prefix: "member") ?? (record["id"] as? String).flatMap(UUID.init) else { continue }
-            let remoteModified = (record["modifiedAt"] as? Date) ?? .distantPast
-            if let local = locals[id] {
-                guard remoteModified > local.modifiedAt else { continue }
-                apply(record, to: local)
-                local.cloudSynced = true
-                applied += 1
-            } else {
-                let member = FamilyMember(name: (record["name"] as? String) ?? "Member")
-                member.id = id
-                apply(record, to: member)
-                member.cloudSynced = true
-                modelContext.insert(member)
-                applied += 1
-            }
-        }
-        return applied
-    }
-
-    private func apply(_ record: CKRecord, to member: FamilyMember) {
-        member.name = (record["name"] as? String) ?? member.name
-        member.colorHex = (record["colorHex"] as? String) ?? member.colorHex
-        member.inviteEmail = (record["inviteEmail"] as? String) ?? member.inviteEmail
-        member.invitePhone = (record["invitePhone"] as? String) ?? member.invitePhone
-        member.createdAt = (record["createdAt"] as? Date) ?? member.createdAt
-        member.modifiedAt = (record["modifiedAt"] as? Date) ?? member.modifiedAt
-        if let asset = record["profileImage"] as? CKAsset, let url = asset.fileURL,
-           let data = try? Data(contentsOf: url) {
-            member.profileImageData = data
-        } else if record["profileImage"] == nil {
-            // Keep existing local image if remote omitted asset due to size; only clear when explicitly empty flag set
-            if (record["hasProfileImage"] as? Int) == 0 {
-                member.profileImageData = nil
-            }
-        }
-    }
-
-    private func applyEvents(_ records: [CKRecord], modelContext: ModelContext) throws -> Int {
-        let locals = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<CalendarEvent>())).map { ($0.id, $0) })
-        let members = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<FamilyMember>())).map { ($0.id, $0) })
-        var applied = 0
-        for record in records {
-            guard let id = uuid(from: record, prefix: "event") ?? (record["id"] as? String).flatMap(UUID.init) else { continue }
-            let remoteModified = (record["modifiedAt"] as? Date) ?? .distantPast
-            let event: CalendarEvent
-            if let local = locals[id] {
-                guard remoteModified > local.modifiedAt else { continue }
-                event = local
-            } else {
-                event = CalendarEvent(
-                    title: (record["title"] as? String) ?? "Event",
-                    startDate: (record["startDate"] as? Date) ?? Date(),
-                    endDate: (record["endDate"] as? Date) ?? Date()
-                )
-                event.id = id
-                modelContext.insert(event)
-            }
-            event.title = (record["title"] as? String) ?? event.title
-            event.notes = (record["notes"] as? String) ?? ""
-            event.startDate = (record["startDate"] as? Date) ?? event.startDate
-            event.endDate = (record["endDate"] as? Date) ?? event.endDate
-            event.isAllDay = (record["isAllDay"] as? Int).map { $0 != 0 } ?? event.isAllDay
-            event.location = (record["location"] as? String) ?? ""
-            event.createdAt = (record["createdAt"] as? Date) ?? event.createdAt
-            event.modifiedAt = remoteModified
-            event.notificationsEnabled = (record["notificationsEnabled"] as? Int).map { $0 != 0 } ?? event.notificationsEnabled
-            if let memberID = (record["assignedMemberID"] as? String).flatMap(UUID.init) {
-                event.assignedMember = members[memberID]
-            } else {
-                event.assignedMember = nil
-            }
-            event.cloudSynced = true
-            applied += 1
-        }
-        return applied
-    }
-
-    private func applyChores(_ records: [CKRecord], modelContext: ModelContext) throws -> Int {
-        let locals = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<Chore>())).map { ($0.id, $0) })
-        let members = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<FamilyMember>())).map { ($0.id, $0) })
-        var applied = 0
-        for record in records {
-            guard let id = uuid(from: record, prefix: "chore") ?? (record["id"] as? String).flatMap(UUID.init) else { continue }
-            let remoteModified = (record["modifiedAt"] as? Date) ?? .distantPast
-            let chore: Chore
-            if let local = locals[id] {
-                guard remoteModified > local.modifiedAt else { continue }
-                chore = local
-            } else {
-                chore = Chore(title: (record["title"] as? String) ?? "Chore")
-                chore.id = id
-                modelContext.insert(chore)
-            }
-            chore.title = (record["title"] as? String) ?? chore.title
-            chore.notes = (record["notes"] as? String) ?? ""
-            chore.dueDate = (record["dueDate"] as? Date) ?? chore.dueDate
-            chore.frequencyRaw = (record["frequencyRaw"] as? String) ?? chore.frequencyRaw
-            chore.isCompleted = (record["isCompleted"] as? Int).map { $0 != 0 } ?? chore.isCompleted
-            chore.completedAt = record["completedAt"] as? Date
-            chore.remindersEnabled = (record["remindersEnabled"] as? Int).map { $0 != 0 } ?? chore.remindersEnabled
-            chore.createdAt = (record["createdAt"] as? Date) ?? chore.createdAt
-            chore.modifiedAt = remoteModified
-            if let data = record["componentsData"] as? Data {
-                chore.componentsData = data
-            } else if let asset = record["componentsData"] as? CKAsset, let url = asset.fileURL,
-                      let data = try? Data(contentsOf: url) {
-                chore.componentsData = data
-            }
-            if let memberID = (record["assignedMemberID"] as? String).flatMap(UUID.init) {
-                chore.assignedMember = members[memberID]
-            } else {
-                chore.assignedMember = nil
-            }
-            chore.cloudSynced = true
-            applied += 1
-        }
-        return applied
-    }
-
-    private func applyRecipes(_ records: [CKRecord], modelContext: ModelContext) throws -> Int {
-        let locals = Dictionary(uniqueKeysWithValues: (try modelContext.fetch(FetchDescriptor<Recipe>())).map { ($0.id, $0) })
-        var applied = 0
-        for record in records {
-            guard let id = uuid(from: record, prefix: "recipe") ?? (record["id"] as? String).flatMap(UUID.init) else { continue }
-            let remoteModified = (record["modifiedAt"] as? Date) ?? .distantPast
-            let recipe: Recipe
-            if let local = locals[id] {
-                guard remoteModified > local.modifiedAt else { continue }
-                recipe = local
-            } else {
-                recipe = Recipe(name: (record["name"] as? String) ?? "Recipe")
-                recipe.id = id
-                modelContext.insert(recipe)
-            }
-            recipe.name = (record["name"] as? String) ?? recipe.name
-            recipe.summary = (record["summary"] as? String) ?? ""
-            recipe.instructions = (record["instructions"] as? String) ?? ""
-            recipe.sourceURL = (record["sourceURL"] as? String) ?? ""
-            recipe.imageURL = (record["imageURL"] as? String) ?? ""
-            recipe.servings = (record["servings"] as? Int) ?? recipe.servings
-            recipe.externalID = (record["externalID"] as? String) ?? ""
-            if let data = record["ingredientsData"] as? Data {
-                recipe.ingredientsData = data
-            } else if let asset = record["ingredientsData"] as? CKAsset, let url = asset.fileURL,
-                      let data = try? Data(contentsOf: url) {
-                recipe.ingredientsData = data
-            }
-            if let asset = record["image"] as? CKAsset, let url = asset.fileURL,
-               let data = try? Data(contentsOf: url) {
-                recipe.imageData = data
-            } else if (record["hasImage"] as? Int) == 0 {
-                recipe.imageData = nil
-            }
-            recipe.createdAt = (record["createdAt"] as? Date) ?? recipe.createdAt
-            recipe.modifiedAt = remoteModified
-            recipe.cloudSynced = true
-            applied += 1
-        }
-        return applied
-    }
-
-    private func removeOrphans(
-        remoteMembers: [CKRecord],
-        remoteEvents: [CKRecord],
-        remoteChores: [CKRecord],
-        remoteRecipes: [CKRecord],
-        modelContext: ModelContext
-    ) throws -> Int {
-        let remoteMemberIDs = Set(remoteMembers.compactMap { uuid(from: $0, prefix: "member") })
-        let remoteEventIDs = Set(remoteEvents.compactMap { uuid(from: $0, prefix: "event") })
-        let remoteChoreIDs = Set(remoteChores.compactMap { uuid(from: $0, prefix: "chore") })
-        let remoteRecipeIDs = Set(remoteRecipes.compactMap { uuid(from: $0, prefix: "recipe") })
-
-        var removed = 0
-        for member in try modelContext.fetch(FetchDescriptor<FamilyMember>()) where member.cloudSynced && !remoteMemberIDs.contains(member.id) {
-            modelContext.delete(member)
-            removed += 1
-        }
-        for event in try modelContext.fetch(FetchDescriptor<CalendarEvent>()) where event.cloudSynced && !remoteEventIDs.contains(event.id) {
-            modelContext.delete(event)
-            removed += 1
-        }
-        for chore in try modelContext.fetch(FetchDescriptor<Chore>()) where chore.cloudSynced && !remoteChoreIDs.contains(chore.id) {
-            modelContext.delete(chore)
-            removed += 1
-        }
-        for recipe in try modelContext.fetch(FetchDescriptor<Recipe>()) where recipe.cloudSynced && !remoteRecipeIDs.contains(recipe.id) {
-            modelContext.delete(recipe)
-            removed += 1
-        }
-        return removed
     }
 
     // MARK: - Push
 
     private func push(
         membership: FamilyMembership,
+        remote: RemoteSnapshot,
         database: CKDatabase,
         zoneID: CKRecordZone.ID,
         modelContext: ModelContext
     ) async throws -> Int {
-        let remoteMembers = Dictionary(uniqueKeysWithValues: try await fetchAll(recordType: memberType, database: database, zoneID: zoneID).compactMap { record -> (UUID, CKRecord)? in
-            guard let id = uuid(from: record, prefix: "member") else { return nil }
-            return (id, record)
-        })
-        let remoteEvents = Dictionary(uniqueKeysWithValues: try await fetchAll(recordType: eventType, database: database, zoneID: zoneID).compactMap { record -> (UUID, CKRecord)? in
-            guard let id = uuid(from: record, prefix: "event") else { return nil }
-            return (id, record)
-        })
-        let remoteChores = Dictionary(uniqueKeysWithValues: try await fetchAll(recordType: choreType, database: database, zoneID: zoneID).compactMap { record -> (UUID, CKRecord)? in
-            guard let id = uuid(from: record, prefix: "chore") else { return nil }
-            return (id, record)
-        })
-        let remoteRecipes = Dictionary(uniqueKeysWithValues: try await fetchAll(recordType: recipeType, database: database, zoneID: zoneID).compactMap { record -> (UUID, CKRecord)? in
-            guard let id = uuid(from: record, prefix: "recipe") else { return nil }
-            return (id, record)
-        })
-
         var toSave: [CKRecord] = []
-        var pushedMembers: [FamilyMember] = []
-        var pushedEvents: [CalendarEvent] = []
-        var pushedChores: [Chore] = []
-        var pushedRecipes: [Recipe] = []
+        var pushed: [(model: any FamilySyncable, name: String, fingerprint: String)] = []
         var tempFiles: [URL] = []
         defer {
             for url in tempFiles { try? FileManager.default.removeItem(at: url) }
         }
 
-        for member in try modelContext.fetch(FetchDescriptor<FamilyMember>()) {
-            let existsRemotely = remoteMembers[member.id] != nil
-            guard shouldUpload(
-                createdAt: member.createdAt,
-                cloudSynced: member.cloudSynced,
-                modifiedAt: member.modifiedAt,
-                remoteModified: (remoteMembers[member.id]?["modifiedAt"] as? Date) ?? .distantPast,
-                existsRemotely: existsRemotely,
-                membership: membership
-            ) else { continue }
-            let record = remoteMembers[member.id] ?? CKRecord(
-                recordType: memberType,
-                recordID: recordID(prefix: "member", id: member.id, zoneID: zoneID)
-            )
-            try encode(member: member, into: record, tempFiles: &tempFiles)
-            toSave.append(record)
-            pushedMembers.append(member)
-        }
+        for entity in entities {
+            let remoteRecords = remote[entity.recordType] ?? [:]
+            for model in try entity.fetchLocal(modelContext) {
+                let name = entity.recordName(for: model.id)
+                let existing = remoteRecords[model.id]
+                guard shouldUpload(
+                    createdAt: model.createdAt,
+                    isKnown: syncedFingerprints[name] != nil,
+                    modifiedAt: model.modifiedAt,
+                    remoteModified: (existing?["modifiedAt"] as? Date) ?? .distantPast,
+                    existsRemotely: existing != nil,
+                    membership: membership
+                ) else { continue }
 
-        for event in try modelContext.fetch(FetchDescriptor<CalendarEvent>()) {
-            let existsRemotely = remoteEvents[event.id] != nil
-            guard shouldUpload(
-                createdAt: event.createdAt,
-                cloudSynced: event.cloudSynced,
-                modifiedAt: event.modifiedAt,
-                remoteModified: (remoteEvents[event.id]?["modifiedAt"] as? Date) ?? .distantPast,
-                existsRemotely: existsRemotely,
-                membership: membership
-            ) else { continue }
-            let record = remoteEvents[event.id] ?? CKRecord(
-                recordType: eventType,
-                recordID: recordID(prefix: "event", id: event.id, zoneID: zoneID)
-            )
-            encode(event: event, into: record)
-            toSave.append(record)
-            pushedEvents.append(event)
-        }
-
-        for chore in try modelContext.fetch(FetchDescriptor<Chore>()) {
-            let existsRemotely = remoteChores[chore.id] != nil
-            guard shouldUpload(
-                createdAt: chore.createdAt,
-                cloudSynced: chore.cloudSynced,
-                modifiedAt: chore.modifiedAt,
-                remoteModified: (remoteChores[chore.id]?["modifiedAt"] as? Date) ?? .distantPast,
-                existsRemotely: existsRemotely,
-                membership: membership
-            ) else { continue }
-            let record = remoteChores[chore.id] ?? CKRecord(
-                recordType: choreType,
-                recordID: recordID(prefix: "chore", id: chore.id, zoneID: zoneID)
-            )
-            try encode(chore: chore, into: record, tempFiles: &tempFiles)
-            toSave.append(record)
-            pushedChores.append(chore)
-        }
-
-        for recipe in try modelContext.fetch(FetchDescriptor<Recipe>()) {
-            let existsRemotely = remoteRecipes[recipe.id] != nil
-            guard shouldUpload(
-                createdAt: recipe.createdAt,
-                cloudSynced: recipe.cloudSynced,
-                modifiedAt: recipe.modifiedAt,
-                remoteModified: (remoteRecipes[recipe.id]?["modifiedAt"] as? Date) ?? .distantPast,
-                existsRemotely: existsRemotely,
-                membership: membership
-            ) else { continue }
-            let record = remoteRecipes[recipe.id] ?? CKRecord(
-                recordType: recipeType,
-                recordID: recordID(prefix: "recipe", id: recipe.id, zoneID: zoneID)
-            )
-            try encode(recipe: recipe, into: record, tempFiles: &tempFiles)
-            toSave.append(record)
-            pushedRecipes.append(recipe)
+                let record = existing ?? CKRecord(
+                    recordType: entity.recordType,
+                    recordID: CKRecord.ID(recordName: name, zoneID: zoneID)
+                )
+                var fields = SyncFields()
+                model.encodeSyncFields(into: &fields)
+                record["id"] = model.id.uuidString as CKRecordValue
+                record["createdAt"] = model.createdAt as CKRecordValue
+                record["modifiedAt"] = model.modifiedAt as CKRecordValue
+                try fields.write(into: record, assetName: name, tempFiles: &tempFiles)
+                toSave.append(record)
+                pushed.append((model, name, fields.fingerprint))
+            }
         }
 
         // Push explicit local deletions only (never delete remotes just because this device is empty).
-        var toDelete: [CKRecord.ID] = []
-        for recordName in pendingDeletionRecordNames {
-            toDelete.append(CKRecord.ID(recordName: recordName, zoneID: zoneID))
-        }
+        let toDelete = pendingDeletionRecordNames.map { CKRecord.ID(recordName: $0, zoneID: zoneID) }
 
         guard !toSave.isEmpty || !toDelete.isEmpty else { return 0 }
 
         let savedCount = try await modifyRecords(toSave: toSave, toDelete: toDelete, database: database)
-        for member in pushedMembers { member.cloudSynced = true }
-        for event in pushedEvents { event.cloudSynced = true }
-        for chore in pushedChores { chore.cloudSynced = true }
-        for recipe in pushedRecipes { recipe.cloudSynced = true }
+        for item in pushed {
+            item.model.cloudSynced = true
+            syncedFingerprints[item.name] = item.fingerprint
+        }
         if !toDelete.isEmpty {
             for id in toDelete {
                 pendingDeletionRecordNames.remove(id.recordName)
@@ -518,118 +382,20 @@ final class FamilySyncService {
         return savedCount
     }
 
-    private func encode(member: FamilyMember, into record: CKRecord, tempFiles: inout [URL]) throws {
-        record["id"] = member.id.uuidString as CKRecordValue
-        record["name"] = member.name as CKRecordValue
-        record["colorHex"] = member.colorHex as CKRecordValue
-        record["inviteEmail"] = member.inviteEmail as CKRecordValue
-        record["invitePhone"] = member.invitePhone as CKRecordValue
-        record["createdAt"] = member.createdAt as CKRecordValue
-        record["modifiedAt"] = member.modifiedAt as CKRecordValue
-        if let data = member.profileImageData, !data.isEmpty {
-            record["hasProfileImage"] = 1 as CKRecordValue
-            record["profileImage"] = try asset(from: data, name: "member-\(member.id.uuidString).jpg", tempFiles: &tempFiles)
-        } else {
-            record["hasProfileImage"] = 0 as CKRecordValue
-            record["profileImage"] = nil
-        }
-    }
-
-    private func encode(event: CalendarEvent, into record: CKRecord) {
-        record["id"] = event.id.uuidString as CKRecordValue
-        record["title"] = event.title as CKRecordValue
-        record["notes"] = event.notes as CKRecordValue
-        record["startDate"] = event.startDate as CKRecordValue
-        record["endDate"] = event.endDate as CKRecordValue
-        record["isAllDay"] = (event.isAllDay ? 1 : 0) as CKRecordValue
-        record["location"] = event.location as CKRecordValue
-        record["createdAt"] = event.createdAt as CKRecordValue
-        record["modifiedAt"] = event.modifiedAt as CKRecordValue
-        record["notificationsEnabled"] = (event.notificationsEnabled ? 1 : 0) as CKRecordValue
-        if let memberID = event.assignedMember?.id.uuidString {
-            record["assignedMemberID"] = memberID as CKRecordValue
-        } else {
-            record["assignedMemberID"] = nil
-        }
-    }
-
     /// Owners seed a new hub with local data. Joiners only upload items created after joining
     /// (or updates to records that already exist in the shared zone).
     private func shouldUpload(
         createdAt: Date,
-        cloudSynced: Bool,
+        isKnown: Bool,
         modifiedAt: Date,
         remoteModified: Date,
         existsRemotely: Bool,
         membership: FamilyMembership
     ) -> Bool {
-        if cloudSynced && modifiedAt <= remoteModified { return false }
+        if isKnown && modifiedAt <= remoteModified { return false }
         if existsRemotely { return true }
         if membership.isOwner { return true }
         return createdAt >= membership.joinedAt
-    }
-
-    private func encode(chore: Chore, into record: CKRecord, tempFiles: inout [URL]) throws {
-        record["id"] = chore.id.uuidString as CKRecordValue
-        record["title"] = chore.title as CKRecordValue
-        record["notes"] = chore.notes as CKRecordValue
-        record["dueDate"] = chore.dueDate as CKRecordValue
-        record["frequencyRaw"] = chore.frequencyRaw as CKRecordValue
-        record["isCompleted"] = (chore.isCompleted ? 1 : 0) as CKRecordValue
-        if let completedAt = chore.completedAt {
-            record["completedAt"] = completedAt as CKRecordValue
-        } else {
-            record["completedAt"] = nil
-        }
-        record["remindersEnabled"] = (chore.remindersEnabled ? 1 : 0) as CKRecordValue
-        record["createdAt"] = chore.createdAt as CKRecordValue
-        record["modifiedAt"] = chore.modifiedAt as CKRecordValue
-        if chore.componentsData.count < 900_000 {
-            record["componentsData"] = chore.componentsData as CKRecordValue
-        } else {
-            record["componentsData"] = try asset(
-                from: chore.componentsData,
-                name: "chore-components-\(chore.id.uuidString).bin",
-                tempFiles: &tempFiles
-            )
-        }
-        if let memberID = chore.assignedMember?.id.uuidString {
-            record["assignedMemberID"] = memberID as CKRecordValue
-        } else {
-            record["assignedMemberID"] = nil
-        }
-    }
-
-    private func encode(recipe: Recipe, into record: CKRecord, tempFiles: inout [URL]) throws {
-        record["id"] = recipe.id.uuidString as CKRecordValue
-        record["name"] = recipe.name as CKRecordValue
-        record["summary"] = recipe.summary as CKRecordValue
-        record["instructions"] = recipe.instructions as CKRecordValue
-        record["sourceURL"] = recipe.sourceURL as CKRecordValue
-        record["imageURL"] = recipe.imageURL as CKRecordValue
-        record["servings"] = recipe.servings as CKRecordValue
-        record["externalID"] = recipe.externalID as CKRecordValue
-        record["createdAt"] = recipe.createdAt as CKRecordValue
-        record["modifiedAt"] = recipe.modifiedAt as CKRecordValue
-        if recipe.ingredientsData.count < 900_000 {
-            record["ingredientsData"] = recipe.ingredientsData as CKRecordValue
-        } else {
-            record["ingredientsData"] = try asset(from: recipe.ingredientsData, name: "ingredients-\(recipe.id.uuidString).bin", tempFiles: &tempFiles)
-        }
-        if let data = recipe.imageData, !data.isEmpty {
-            record["hasImage"] = 1 as CKRecordValue
-            record["image"] = try asset(from: data, name: "recipe-\(recipe.id.uuidString).jpg", tempFiles: &tempFiles)
-        } else {
-            record["hasImage"] = 0 as CKRecordValue
-            record["image"] = nil
-        }
-    }
-
-    private func asset(from data: Data, name: String, tempFiles: inout [URL]) throws -> CKAsset {
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(name)
-        try data.write(to: url, options: .atomic)
-        tempFiles.append(url)
-        return CKAsset(fileURL: url)
     }
 
     // MARK: - CloudKit IO

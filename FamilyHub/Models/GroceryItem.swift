@@ -34,6 +34,8 @@ final class GroceryItem {
     var isChecked: Bool = false
     var notes: String = ""
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     init(
         name: String,
@@ -48,6 +50,8 @@ final class GroceryItem {
         self.isChecked = false
         self.notes = notes
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var category: GroceryCategory {

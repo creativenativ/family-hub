@@ -8,6 +8,8 @@ final class BudgetExpense {
     var note: String = ""
     var date: Date = Date()
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     var budgetItem: BudgetItem?
     var paidBy: FamilyMember?
@@ -24,6 +26,8 @@ final class BudgetExpense {
         self.note = note
         self.date = date
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
         self.budgetItem = budgetItem
         self.paidBy = paidBy
     }

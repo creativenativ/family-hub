@@ -30,6 +30,8 @@ final class MealPlan {
     var servings: Int = 4
     var recipeID: UUID?
     var createdAt: Date = Date()
+    var modifiedAt: Date = Date()
+    var cloudSynced: Bool = false
 
     init(
         date: Date,
@@ -47,6 +49,8 @@ final class MealPlan {
         self.servings = servings
         self.recipeID = recipeID
         self.createdAt = Date()
+        self.modifiedAt = Date()
+        self.cloudSynced = false
     }
 
     var mealType: MealType {
