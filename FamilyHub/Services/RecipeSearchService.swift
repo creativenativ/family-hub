@@ -2,7 +2,12 @@ import Foundation
 import SwiftData
 
 enum RecipeSearchService {
-    private static let baseURL = "https://www.themealdb.com/api/json/v1/1"
+    /// Off for the App Store release: "1" is TheMealDB's development-only test key.
+    /// To turn search back on, get a supporter key from themealdb.com, put it in `apiKey`,
+    /// and set this to true.
+    static let isEnabled = false
+    private static let apiKey = "1"
+    private static let baseURL = "https://www.themealdb.com/api/json/v1/\(apiKey)"
 
     private static let knownCategories: Set<String> = [
         "Beef", "Breakfast", "Chicken", "Dessert", "Goat", "Lamb",

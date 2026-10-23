@@ -48,8 +48,9 @@ struct SyncFields {
     mutating func set(_ key: String, _ value: Int) { values[key] = .int(value) }
     mutating func set(_ key: String, _ value: Double) { values[key] = .double(value) }
     mutating func set(_ key: String, _ value: Bool) { values[key] = .int(value ? 1 : 0) }
-    mutating func set(_ key: String, _ value: Date?) { values[key] = value.map(SyncValue.date) ?? .none }
-    mutating func set(_ key: String, _ value: UUID?) { values[key] = value.map { .string($0.uuidString) } ?? .none }
+    // `SyncValue.none` (not Optional.none) so a cleared value is written as a cleared field.
+    mutating func set(_ key: String, _ value: Date?) { values[key] = value.map(SyncValue.date) ?? SyncValue.none }
+    mutating func set(_ key: String, _ value: UUID?) { values[key] = value.map { .string($0.uuidString) } ?? SyncValue.none }
 
     /// Stable hash of the content, used to notice local edits between syncs.
     var fingerprint: String {

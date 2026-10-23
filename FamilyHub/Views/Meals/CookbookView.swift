@@ -18,6 +18,7 @@ struct CookbookView: View {
 
     var body: some View {
         List {
+            if RecipeSearchService.isEnabled {
             Section {
                 HStack {
                     TextField("Search web recipes…", text: $searchText)
@@ -46,6 +47,7 @@ struct CookbookView: View {
                 Text("Find Recipes")
             } footer: {
                 Text("Searches recipe names, ingredients, categories (e.g. Pasta), and cuisines (e.g. Italian). Results include a short description when available.")
+            }
             }
 
             if !remoteResults.isEmpty {

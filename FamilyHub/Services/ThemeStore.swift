@@ -189,7 +189,8 @@ final class ThemeStore {
 
 extension Color {
     /// The theme's accent; use in place of `Color.accentColor`.
-    @MainActor static var themeAccent: Color { ThemeStore.shared.accent }
+    /// Views only build on the main thread, so this is safe from any view body.
+    static var themeAccent: Color { MainActor.assumeIsolated { ThemeStore.shared.accent } }
 
     /// Black or white, whichever reads better on this color.
     var contrastingText: Color {

@@ -217,7 +217,7 @@ enum DemoTribes {
             return tribe
         }
 
-        _ = tribe("The Schwartzels", kind: .family, color: "#2A3723", unread: 0, home: true)
+        _ = tribe("The Parkers", kind: .family, color: "#2A3723", unread: 0, home: true)
         let work = tribe("Work", kind: .calendar, color: "#005667", unread: 3)
         let soccer = tribe("Soccer Club", kind: .calendar, color: "#B78819", unread: 1)
         _ = tribe("Book Club", kind: .calendar, color: "#9A6724", unread: 0)

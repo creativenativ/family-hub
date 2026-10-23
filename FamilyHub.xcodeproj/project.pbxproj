@@ -27,6 +27,7 @@
 		FH0000010000000000000010 /* AddChoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000010 /* AddChoreView.swift */; };
 		FH0000010000000000000011 /* FamilyMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000011 /* FamilyMembersView.swift */; };
 		FH0000010000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000012 /* Assets.xcassets */; };
+		FH00000100000000000000A9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A9 /* PrivacyInfo.xcprivacy */; };
 		FH0000010000000000000013 /* MemberAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000014 /* MemberAvatar.swift */; };
 		FH0000010000000000000014 /* MemberEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000015 /* MemberEditorView.swift */; };
 		FH0000010000000000000015 /* VoiceMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000016 /* VoiceMemo.swift */; };
@@ -93,6 +94,7 @@
 		FH0000020000000000000010 /* AddChoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoreView.swift; sourceTree = "<group>"; };
 		FH0000020000000000000011 /* FamilyMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMembersView.swift; sourceTree = "<group>"; };
 		FH0000020000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FH00000200000000000000A9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		FH0000020000000000000013 /* FamilyHub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FamilyHub.entitlements; sourceTree = "<group>"; };
 		FH0000020000000000000014 /* MemberAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAvatar.swift; sourceTree = "<group>"; };
 		FH0000020000000000000015 /* MemberEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberEditorView.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				FH0000050000000000000006 /* Extensions */,
 				FH000005000000000000000D /* Services */,
 				FH0000020000000000000012 /* Assets.xcassets */,
+				FH00000200000000000000A9 /* PrivacyInfo.xcprivacy */,
 				FH0000020000000000000013 /* FamilyHub.entitlements */,
 			);
 			path = FamilyHub;
@@ -393,6 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FH0000010000000000000012 /* Assets.xcassets in Resources */,
+				FH00000100000000000000A9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +592,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tribe Time";
 				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos of recipes to copy text into your cookbook.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice memos for tribe members.";
@@ -597,7 +602,7 @@
 				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -607,7 +612,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -625,6 +630,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tribe Time";
 				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos of recipes to copy text into your cookbook.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice memos for tribe members.";
@@ -634,7 +640,7 @@
 				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -644,7 +650,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
