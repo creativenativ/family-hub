@@ -1,0 +1,645 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FH0000010000000000000001 /* FamilyHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000001 /* FamilyHubApp.swift */; };
+		FH0000010000000000000002 /* FamilyMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000002 /* FamilyMember.swift */; };
+		FH0000010000000000000003 /* CalendarEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000003 /* CalendarEvent.swift */; };
+		FH0000010000000000000004 /* MealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000004 /* MealPlan.swift */; };
+		FH0000010000000000000005 /* GroceryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000005 /* GroceryItem.swift */; };
+		FH0000010000000000000006 /* Chore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000006 /* Chore.swift */; };
+		FH0000010000000000000007 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000007 /* Date+Extensions.swift */; };
+		FH0000010000000000000008 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000008 /* MainTabView.swift */; };
+		FH0000010000000000000009 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000009 /* CalendarView.swift */; };
+		FH000001000000000000000A /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000A /* AddEventView.swift */; };
+		FH000001000000000000000B /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000B /* MealPlanView.swift */; };
+		FH000001000000000000000C /* AddMealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000C /* AddMealView.swift */; };
+		FH000001000000000000000D /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000D /* GroceryListView.swift */; };
+		FH000001000000000000000E /* AddGroceryItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000E /* AddGroceryItemView.swift */; };
+		FH000001000000000000000F /* ChoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000F /* ChoresView.swift */; };
+		FH0000010000000000000010 /* AddChoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000010 /* AddChoreView.swift */; };
+		FH0000010000000000000011 /* FamilyMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000011 /* FamilyMembersView.swift */; };
+		FH0000010000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000012 /* Assets.xcassets */; };
+		FH0000010000000000000013 /* MemberAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000014 /* MemberAvatar.swift */; };
+		FH0000010000000000000014 /* MemberEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000015 /* MemberEditorView.swift */; };
+		FH0000010000000000000015 /* VoiceMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000016 /* VoiceMemo.swift */; };
+		FH0000010000000000000016 /* VoiceMemoAudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000017 /* VoiceMemoAudioController.swift */; };
+		FH0000010000000000000017 /* VoiceMemoBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000018 /* VoiceMemoBoardView.swift */; };
+		FH0000010000000000000018 /* ChoreReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000019 /* ChoreReminderService.swift */; };
+		FH0000010000000000000019 /* EmailEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001A /* EmailEventParser.swift */; };
+		FH000001000000000000001A /* ImportEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001B /* ImportEmailView.swift */; };
+		FH000001000000000000001B /* PendingEmailImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001C /* PendingEmailImport.swift */; };
+		FH000001000000000000001C /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001D /* NotificationsView.swift */; };
+		FH000001000000000000001D /* BudgetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001E /* BudgetItem.swift */; };
+		FH000001000000000000002E /* BudgetExpense.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002E /* BudgetExpense.swift */; };
+		FH000001000000000000002F /* IncomeSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002F /* IncomeSource.swift */; };
+		FH0000010000000000000030 /* RecurringBill.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000030 /* RecurringBill.swift */; };
+		FH0000010000000000000031 /* BillScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000031 /* BillScheduleService.swift */; };
+		FH0000010000000000000032 /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000032 /* NotificationPreferences.swift */; };
+		FH0000010000000000000033 /* EventReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000033 /* EventReminderService.swift */; };
+		FH0000010000000000000034 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000034 /* NotificationSettingsView.swift */; };
+		FH0000010000000000000035 /* ChoreDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000035 /* ChoreDetailView.swift */; };
+		FH0000010000000000000036 /* FamilyInviteComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000036 /* FamilyInviteComposerView.swift */; };
+		FH0000010000000000000037 /* ColorWheelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000037 /* ColorWheelPicker.swift */; };
+		FH0000010000000000000038 /* FavoriteWeeklyMealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000038 /* FavoriteWeeklyMealPlan.swift */; };
+		FH0000010000000000000039 /* FavoriteWeeklyMealPlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000039 /* FavoriteWeeklyMealPlansView.swift */; };
+		FH000001000000000000001E /* HouseholdNeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000001F /* HouseholdNeed.swift */; };
+		FH000001000000000000001F /* WishListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000020 /* WishListItem.swift */; };
+		FH0000010000000000000020 /* HouseholdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000021 /* HouseholdView.swift */; };
+		FH0000010000000000000021 /* BudgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000022 /* BudgetView.swift */; };
+		FH0000010000000000000022 /* HouseholdNeedsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000023 /* HouseholdNeedsView.swift */; };
+		FH0000010000000000000023 /* WishListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000024 /* WishListView.swift */; };
+		FH0000010000000000000024 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000025 /* Recipe.swift */; };
+		FH0000010000000000000025 /* RecipeSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000026 /* RecipeSearchService.swift */; };
+		FH0000010000000000000026 /* MealsHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000027 /* MealsHubView.swift */; };
+		FH0000010000000000000027 /* CookbookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000028 /* CookbookView.swift */; };
+		FH0000010000000000000028 /* FamilyMembership.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000029 /* FamilyMembership.swift */; };
+		FH0000010000000000000029 /* FamilyCloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002A /* FamilyCloudService.swift */; };
+		FH000001000000000000002A /* FamilyShareAcceptanceCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */; };
+		FH000001000000000000002B /* FamilySharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002C /* FamilySharingView.swift */; };
+		FH000001000000000000002C /* FamilySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000002D /* FamilySyncService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FH0000020000000000000001 /* FamilyHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyHubApp.swift; sourceTree = "<group>"; };
+		FH0000020000000000000002 /* FamilyMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMember.swift; sourceTree = "<group>"; };
+		FH0000020000000000000003 /* CalendarEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEvent.swift; sourceTree = "<group>"; };
+		FH0000020000000000000004 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
+		FH0000020000000000000005 /* GroceryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryItem.swift; sourceTree = "<group>"; };
+		FH0000020000000000000006 /* Chore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chore.swift; sourceTree = "<group>"; };
+		FH0000020000000000000007 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		FH0000020000000000000008 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000009 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000A /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000B /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000C /* AddMealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMealView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000D /* GroceryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000E /* AddGroceryItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroceryItemView.swift; sourceTree = "<group>"; };
+		FH000002000000000000000F /* ChoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000010 /* AddChoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoreView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000011 /* FamilyMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMembersView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FH0000020000000000000013 /* FamilyHub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FamilyHub.entitlements; sourceTree = "<group>"; };
+		FH0000020000000000000014 /* MemberAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAvatar.swift; sourceTree = "<group>"; };
+		FH0000020000000000000015 /* MemberEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberEditorView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000016 /* VoiceMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMemo.swift; sourceTree = "<group>"; };
+		FH0000020000000000000017 /* VoiceMemoAudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMemoAudioController.swift; sourceTree = "<group>"; };
+		FH0000020000000000000018 /* VoiceMemoBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMemoBoardView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000019 /* ChoreReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreReminderService.swift; sourceTree = "<group>"; };
+		FH000002000000000000001A /* EmailEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailEventParser.swift; sourceTree = "<group>"; };
+		FH000002000000000000001B /* ImportEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportEmailView.swift; sourceTree = "<group>"; };
+		FH000002000000000000001C /* PendingEmailImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingEmailImport.swift; sourceTree = "<group>"; };
+		FH000002000000000000001D /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		FH000002000000000000001E /* BudgetItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetItem.swift; sourceTree = "<group>"; };
+		FH000002000000000000002E /* BudgetExpense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetExpense.swift; sourceTree = "<group>"; };
+		FH000002000000000000002F /* IncomeSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomeSource.swift; sourceTree = "<group>"; };
+		FH0000020000000000000030 /* RecurringBill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurringBill.swift; sourceTree = "<group>"; };
+		FH0000020000000000000031 /* BillScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillScheduleService.swift; sourceTree = "<group>"; };
+		FH000002000000000000001F /* HouseholdNeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdNeed.swift; sourceTree = "<group>"; };
+		FH0000020000000000000020 /* WishListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListItem.swift; sourceTree = "<group>"; };
+		FH0000020000000000000021 /* HouseholdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000022 /* BudgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000023 /* HouseholdNeedsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdNeedsView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000024 /* WishListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000025 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		FH0000020000000000000026 /* RecipeSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSearchService.swift; sourceTree = "<group>"; };
+		FH0000020000000000000027 /* MealsHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsHubView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000028 /* CookbookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookbookView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000029 /* FamilyMembership.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMembership.swift; sourceTree = "<group>"; };
+		FH000002000000000000002A /* FamilyCloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyCloudService.swift; sourceTree = "<group>"; };
+		FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareAcceptanceCenter.swift; sourceTree = "<group>"; };
+		FH000002000000000000002C /* FamilySharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySharingView.swift; sourceTree = "<group>"; };
+		FH000002000000000000002D /* FamilySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySyncService.swift; sourceTree = "<group>"; };
+		FH0000020000000000000032 /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
+		FH0000020000000000000033 /* EventReminderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventReminderService.swift; sourceTree = "<group>"; };
+		FH0000020000000000000034 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000035 /* ChoreDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreDetailView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000036 /* FamilyInviteComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyInviteComposerView.swift; sourceTree = "<group>"; };
+		FH0000020000000000000037 /* ColorWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorWheelPicker.swift; sourceTree = "<group>"; };
+		FH0000020000000000000038 /* FavoriteWeeklyMealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteWeeklyMealPlan.swift; sourceTree = "<group>"; };
+		FH0000020000000000000039 /* FavoriteWeeklyMealPlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteWeeklyMealPlansView.swift; sourceTree = "<group>"; };
+		FH0000030000000000000001 /* FamilyHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FH0000040000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FH0000050000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				FH0000050000000000000002 /* FamilyHub */,
+				FH0000050000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000002 /* FamilyHub */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000001 /* FamilyHubApp.swift */,
+				FH0000050000000000000004 /* Models */,
+				FH0000050000000000000005 /* Views */,
+				FH0000050000000000000006 /* Extensions */,
+				FH000005000000000000000D /* Services */,
+				FH0000020000000000000012 /* Assets.xcassets */,
+				FH0000020000000000000013 /* FamilyHub.entitlements */,
+			);
+			path = FamilyHub;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000030000000000000001 /* FamilyHub.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000002 /* FamilyMember.swift */,
+				FH0000020000000000000003 /* CalendarEvent.swift */,
+				FH0000020000000000000004 /* MealPlan.swift */,
+				FH0000020000000000000005 /* GroceryItem.swift */,
+				FH0000020000000000000006 /* Chore.swift */,
+				FH0000020000000000000016 /* VoiceMemo.swift */,
+				FH000002000000000000001C /* PendingEmailImport.swift */,
+				FH000002000000000000001E /* BudgetItem.swift */,
+				FH000002000000000000002E /* BudgetExpense.swift */,
+				FH000002000000000000002F /* IncomeSource.swift */,
+				FH0000020000000000000030 /* RecurringBill.swift */,
+				FH000002000000000000001F /* HouseholdNeed.swift */,
+				FH0000020000000000000020 /* WishListItem.swift */,
+				FH0000020000000000000025 /* Recipe.swift */,
+				FH0000020000000000000029 /* FamilyMembership.swift */,
+				FH0000020000000000000038 /* FavoriteWeeklyMealPlan.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000008 /* MainTabView.swift */,
+				FH0000050000000000000007 /* Calendar */,
+				FH0000050000000000000008 /* Meals */,
+				FH0000050000000000000009 /* Groceries */,
+				FH000005000000000000000F /* Household */,
+				FH000005000000000000000A /* Chores */,
+				FH000005000000000000000B /* Family */,
+				FH000005000000000000000C /* Components */,
+				FH000005000000000000000E /* Notifications */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000006 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000007 /* Date+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000007 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000009 /* CalendarView.swift */,
+				FH000002000000000000000A /* AddEventView.swift */,
+				FH0000020000000000000018 /* VoiceMemoBoardView.swift */,
+				FH000002000000000000001B /* ImportEmailView.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000008 /* Meals */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000027 /* MealsHubView.swift */,
+				FH000002000000000000000B /* MealPlanView.swift */,
+				FH000002000000000000000C /* AddMealView.swift */,
+				FH0000020000000000000039 /* FavoriteWeeklyMealPlansView.swift */,
+				FH0000020000000000000028 /* CookbookView.swift */,
+			);
+			path = Meals;
+			sourceTree = "<group>";
+		};
+		FH0000050000000000000009 /* Groceries */ = {
+			isa = PBXGroup;
+			children = (
+				FH000002000000000000000D /* GroceryListView.swift */,
+				FH000002000000000000000E /* AddGroceryItemView.swift */,
+			);
+			path = Groceries;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000A /* Chores */ = {
+			isa = PBXGroup;
+			children = (
+				FH000002000000000000000F /* ChoresView.swift */,
+				FH0000020000000000000010 /* AddChoreView.swift */,
+				FH0000020000000000000035 /* ChoreDetailView.swift */,
+			);
+			path = Chores;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000B /* Family */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000011 /* FamilyMembersView.swift */,
+				FH0000020000000000000015 /* MemberEditorView.swift */,
+				FH000002000000000000002C /* FamilySharingView.swift */,
+				FH0000020000000000000036 /* FamilyInviteComposerView.swift */,
+			);
+			path = Family;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000014 /* MemberAvatar.swift */,
+				FH0000020000000000000037 /* ColorWheelPicker.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000017 /* VoiceMemoAudioController.swift */,
+				FH0000020000000000000019 /* ChoreReminderService.swift */,
+				FH000002000000000000001A /* EmailEventParser.swift */,
+				FH0000020000000000000026 /* RecipeSearchService.swift */,
+				FH000002000000000000002A /* FamilyCloudService.swift */,
+				FH000002000000000000002B /* FamilyShareAcceptanceCenter.swift */,
+				FH000002000000000000002D /* FamilySyncService.swift */,
+				FH0000020000000000000031 /* BillScheduleService.swift */,
+				FH0000020000000000000032 /* NotificationPreferences.swift */,
+				FH0000020000000000000033 /* EventReminderService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000E /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				FH000002000000000000001D /* NotificationsView.swift */,
+				FH0000020000000000000034 /* NotificationSettingsView.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		FH000005000000000000000F /* Household */ = {
+			isa = PBXGroup;
+			children = (
+				FH0000020000000000000021 /* HouseholdView.swift */,
+				FH0000020000000000000022 /* BudgetView.swift */,
+				FH0000020000000000000023 /* HouseholdNeedsView.swift */,
+				FH0000020000000000000024 /* WishListView.swift */,
+			);
+			path = Household;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FH0000060000000000000001 /* FamilyHub */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FH0000090000000000000003 /* Build configuration list for PBXNativeTarget "FamilyHub" */;
+			buildPhases = (
+				FH0000070000000000000001 /* Sources */,
+				FH0000040000000000000001 /* Frameworks */,
+				FH0000080000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FamilyHub;
+			productName = FamilyHub;
+			productReference = FH0000030000000000000001 /* FamilyHub.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FH0000060000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					FH0000060000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = FH0000090000000000000001 /* Build configuration list for PBXProject "FamilyHub" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FH0000050000000000000001;
+			productRefGroup = FH0000050000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FH0000060000000000000001 /* FamilyHub */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FH0000080000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FH0000010000000000000012 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FH0000070000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FH0000010000000000000001 /* FamilyHubApp.swift in Sources */,
+				FH0000010000000000000002 /* FamilyMember.swift in Sources */,
+				FH0000010000000000000003 /* CalendarEvent.swift in Sources */,
+				FH0000010000000000000004 /* MealPlan.swift in Sources */,
+				FH0000010000000000000005 /* GroceryItem.swift in Sources */,
+				FH0000010000000000000006 /* Chore.swift in Sources */,
+				FH0000010000000000000007 /* Date+Extensions.swift in Sources */,
+				FH0000010000000000000008 /* MainTabView.swift in Sources */,
+				FH0000010000000000000009 /* CalendarView.swift in Sources */,
+				FH000001000000000000000A /* AddEventView.swift in Sources */,
+				FH000001000000000000000B /* MealPlanView.swift in Sources */,
+				FH000001000000000000000C /* AddMealView.swift in Sources */,
+				FH000001000000000000000D /* GroceryListView.swift in Sources */,
+				FH000001000000000000000E /* AddGroceryItemView.swift in Sources */,
+				FH000001000000000000000F /* ChoresView.swift in Sources */,
+				FH0000010000000000000010 /* AddChoreView.swift in Sources */,
+				FH0000010000000000000011 /* FamilyMembersView.swift in Sources */,
+				FH0000010000000000000013 /* MemberAvatar.swift in Sources */,
+				FH0000010000000000000014 /* MemberEditorView.swift in Sources */,
+				FH0000010000000000000015 /* VoiceMemo.swift in Sources */,
+				FH0000010000000000000016 /* VoiceMemoAudioController.swift in Sources */,
+				FH0000010000000000000017 /* VoiceMemoBoardView.swift in Sources */,
+				FH0000010000000000000018 /* ChoreReminderService.swift in Sources */,
+				FH0000010000000000000019 /* EmailEventParser.swift in Sources */,
+				FH000001000000000000001A /* ImportEmailView.swift in Sources */,
+				FH000001000000000000001B /* PendingEmailImport.swift in Sources */,
+				FH000001000000000000001C /* NotificationsView.swift in Sources */,
+				FH000001000000000000001D /* BudgetItem.swift in Sources */,
+				FH000001000000000000002E /* BudgetExpense.swift in Sources */,
+				FH000001000000000000002F /* IncomeSource.swift in Sources */,
+				FH0000010000000000000030 /* RecurringBill.swift in Sources */,
+				FH0000010000000000000031 /* BillScheduleService.swift in Sources */,
+				FH0000010000000000000032 /* NotificationPreferences.swift in Sources */,
+				FH0000010000000000000033 /* EventReminderService.swift in Sources */,
+				FH0000010000000000000034 /* NotificationSettingsView.swift in Sources */,
+				FH0000010000000000000035 /* ChoreDetailView.swift in Sources */,
+				FH0000010000000000000036 /* FamilyInviteComposerView.swift in Sources */,
+				FH0000010000000000000037 /* ColorWheelPicker.swift in Sources */,
+				FH0000010000000000000038 /* FavoriteWeeklyMealPlan.swift in Sources */,
+				FH0000010000000000000039 /* FavoriteWeeklyMealPlansView.swift in Sources */,
+				FH000001000000000000001E /* HouseholdNeed.swift in Sources */,
+				FH000001000000000000001F /* WishListItem.swift in Sources */,
+				FH0000010000000000000020 /* HouseholdView.swift in Sources */,
+				FH0000010000000000000021 /* BudgetView.swift in Sources */,
+				FH0000010000000000000022 /* HouseholdNeedsView.swift in Sources */,
+				FH0000010000000000000023 /* WishListView.swift in Sources */,
+				FH0000010000000000000024 /* Recipe.swift in Sources */,
+				FH0000010000000000000025 /* RecipeSearchService.swift in Sources */,
+				FH0000010000000000000026 /* MealsHubView.swift in Sources */,
+				FH0000010000000000000027 /* CookbookView.swift in Sources */,
+				FH0000010000000000000028 /* FamilyMembership.swift in Sources */,
+				FH0000010000000000000029 /* FamilyCloudService.swift in Sources */,
+				FH000001000000000000002A /* FamilyShareAcceptanceCenter.swift in Sources */,
+				FH000001000000000000002B /* FamilySharingView.swift in Sources */,
+				FH000001000000000000002C /* FamilySyncService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FH00000A0000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7L2N3C84B3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FH00000A0000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7L2N3C84B3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FH00000A0000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FamilyHub/FamilyHub.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7L2N3C84B3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Tribe Time";
+				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos of recipes to copy text into your cookbook.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice memos for tribe members.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose photos for tribe profiles and recipe scans.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielschwartzel.familyhub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FH00000A0000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FamilyHub/FamilyHub.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7L2N3C84B3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Tribe Time";
+				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos of recipes to copy text into your cookbook.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice memos for tribe members.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Choose photos for tribe profiles and recipe scans.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielschwartzel.familyhub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FH0000090000000000000001 /* Build configuration list for PBXProject "FamilyHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FH00000A0000000000000001 /* Debug */,
+				FH00000A0000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FH0000090000000000000003 /* Build configuration list for PBXNativeTarget "FamilyHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FH00000A0000000000000003 /* Debug */,
+				FH00000A0000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FH0000060000000000000002 /* Project object */;
+}
