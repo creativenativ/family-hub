@@ -4,6 +4,7 @@ import UIKit
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var confirmReset = false
+    @AppStorage("Calendar.showChores") private var showsChoresOnCalendar = true
 
     var body: some View {
         let theme = ThemeStore.shared
@@ -38,6 +39,7 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Toggle("Show chores on calendar", isOn: $showsChoresOnCalendar)
                     ForEach(ThemeRole.calendar) { role in
                         NavigationLink {
                             ThemeColorPickerView(role: role)

@@ -245,6 +245,10 @@ enum DemoTribes {
         tripCopy.linkedSourceTribeName = work.familyName
         modelContext.insert(tripCopy)
 
+        for (name, hex) in [("Dad", "#005667"), ("Mom", "#9A6724"), ("Ava", "#B78819")] {
+            modelContext.insert(FamilyMember(name: name, colorHex: hex))
+        }
+
         try? modelContext.save()
     }
 }

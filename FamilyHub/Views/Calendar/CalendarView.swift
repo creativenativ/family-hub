@@ -87,6 +87,7 @@ struct CalendarView: View {
     @State private var showingImportEmail = false
     @State private var filteredMemberIDs: Set<UUID> = []
     @State private var itemToColor: CalendarBarItem?
+    @AppStorage("Calendar.showChores") private var showsChores = true
 
     private let calendar = Calendar.current
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
@@ -138,7 +139,7 @@ struct CalendarView: View {
 
     private var filteredChores: [Chore] {
         chores.filter { chore in
-            guard showsHomeItems, !chore.isCompleted else { return false }
+            guard showsChores, showsHomeItems, !chore.isCompleted else { return false }
             guard !filteredMemberIDs.isEmpty else { return true }
             guard let memberID = chore.assignedMember?.id else { return true }
             return filteredMemberIDs.contains(memberID)

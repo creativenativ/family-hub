@@ -3,6 +3,7 @@ import SwiftData
 
 struct ChoreDetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @Bindable var chore: Chore
 
     @State private var showingAddStep = false
@@ -105,7 +106,44 @@ struct ChoreDetailView: View {
                 } header: {
                     Text("Steps & instructions")
                 } footer: {
-                    Text("Tap a step to mark it done. Completing every step marks the chore complete. Double-tap a chore in the list to open this screen.")
+                    Text("Tap a step to mark it done. Completing every step marks the chore complete.")
+                }
+
+                Section("Marker color") {
+                    HStack(spacing: 14) {
+                        ForEach(Marker.inks, id: \.hex) { ink in
+                            let isSelected = (chore.markerColorHex.isEmpty ? Marker.defaultInk : chore.markerColorHex)
+                                .caseInsensitiveCompare(ink.hex) == .orderedSame
+                            Button {
+                                chore.markerColorHex = ink.hex
+                                chore.touchForSync()
+                            } label: {
+                                Circle()
+                                    .fill(Marker.color(ink.hex))
+                                    .frame(width: 32, height: 32)
+                                    .overlay {
+                                        if isSelected {
+                                            Image(systemName: "checkmark")
+                                                .font(.caption.weight(.bold))
+                                                .foregroundStyle(.white)
+                                        }
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(ink.name)
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+                }
+
+                Section {
+                    Button("Erase from board", role: .destructive) {
+                        Task { await ChoreReminderService.cancelReminder(for: chore.id) }
+                        modelContext.delete(chore)
+                        dismiss()
+                    }
                 }
             }
             .navigationTitle("Chore Details")

@@ -55,6 +55,11 @@ final class Chore {
     var componentsData: Data = Data()
     /// Personal color override on the calendar ("" = default).
     var customColorHex: String = ""
+    /// Position on the chore whiteboard as fractions of the board's width (both axes); -1 = not placed yet.
+    var boardX: Double = -1
+    var boardY: Double = -1
+    /// Marker color the chore is written in on the whiteboard ("" = default ink).
+    var markerColorHex: String = ""
 
     var assignedMember: FamilyMember?
 

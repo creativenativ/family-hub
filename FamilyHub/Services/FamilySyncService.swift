@@ -83,6 +83,7 @@ final class FamilySyncService {
         .of(FamilyMember.self),
         .events(zoneKey: ""),
         .of(Chore.self),
+        .of(BoardNote.self),
         .of(Recipe.self),
         .of(MealPlan.self),
         .of(FavoriteWeeklyMealPlan.self),

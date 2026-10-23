@@ -14,6 +14,17 @@ A native iOS tribe organizer for planning, scheduling, meal planning, grocery li
 - **Tribe Members** — Color-coded profiles for assigning events and chores
 - **iCloud Sync** — Private CloudKit sync across devices on the same Apple ID
 
+## Chore whiteboard
+
+The **Chores** tab is a family whiteboard. Chores and room headings are written in marker, and it shares with the home tribe.
+
+- A fresh board is filled with the common indoor chores, grouped under Kitchen, Living areas, Bathroom, Bedrooms, Laundry and Around the house. This only happens for the home tribe's owner, or when you're not in a tribe; members get the owner's board by sync. **+ → Add common chores** restores any that were removed.
+- **Move things:** touch and hold any chore or heading, then drag. Positions sync, so everyone sees the same layout.
+- **Write a chore:** tap a marker in the tray under the board (or **+ → New chore**). **+ → Add heading** labels a new area. Tap a heading to rename or erase it.
+- **Check off** with the hand-drawn box. Repeating chores show the check briefly, then reset for next time. One-time chores stay crossed out until you use the **eraser**.
+- **Magnets** across the top filter the board by person. Tap a chore for its steps, assignee, marker color and **Erase from board**.
+- Settings → Calendar → **Show chores on calendar** hides chores from the calendar if it gets crowded.
+
 ## Appearance & Settings
 
 Tap the **gear** at the top-left of the Tribe tab for Settings:
@@ -73,7 +84,7 @@ Edits and deletions are detected automatically at sync time (each device remembe
 
 **Before shipping to TestFlight / App Store:** the new record types (`SharedMealPlan`, `SharedGroceryItem`, `SharedBudgetItem`, etc.) are created automatically in the CloudKit **Development** environment the first time they sync. Deploy the schema to **Production** in the CloudKit Console before releasing, or production builds won't be able to save them.
 
-**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, `-startTab tribe` to open on the Tribe tab, `-showSettings` to open Settings, and `-showNotifications` to open the notifications panel (Xcode → Product → Scheme → Edit Scheme → Arguments).
+**Simulator testing (Debug builds):** launch with `-seedDemoTribes` to fill in sample tribes and events, `-startTab tribe` (or `chores`, `meals`, `household`) to open on a tab, `-showSettings` to open Settings, and `-showNotifications` to open the notifications panel (Xcode → Product → Scheme → Edit Scheme → Arguments).
 
 Test on **real devices** signed into iCloud (simulator sharing is unreliable). After upgrading, delete and reinstall if the store schema fails to migrate.
 

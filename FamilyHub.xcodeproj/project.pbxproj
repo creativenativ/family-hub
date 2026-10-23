@@ -22,6 +22,8 @@
 		FH000001000000000000000D /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000D /* GroceryListView.swift */; };
 		FH000001000000000000000E /* AddGroceryItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000E /* AddGroceryItemView.swift */; };
 		FH000001000000000000000F /* ChoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH000002000000000000000F /* ChoresView.swift */; };
+		FH00000100000000000000A7 /* BoardNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A7 /* BoardNote.swift */; };
+		FH00000100000000000000A8 /* WhiteboardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH00000200000000000000A8 /* WhiteboardViews.swift */; };
 		FH0000010000000000000010 /* AddChoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000010 /* AddChoreView.swift */; };
 		FH0000010000000000000011 /* FamilyMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000011 /* FamilyMembersView.swift */; };
 		FH0000010000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FH0000020000000000000012 /* Assets.xcassets */; };
@@ -86,6 +88,8 @@
 		FH000002000000000000000D /* GroceryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
 		FH000002000000000000000E /* AddGroceryItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGroceryItemView.swift; sourceTree = "<group>"; };
 		FH000002000000000000000F /* ChoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresView.swift; sourceTree = "<group>"; };
+		FH00000200000000000000A7 /* BoardNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardNote.swift; sourceTree = "<group>"; };
+		FH00000200000000000000A8 /* WhiteboardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhiteboardViews.swift; sourceTree = "<group>"; };
 		FH0000020000000000000010 /* AddChoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddChoreView.swift; sourceTree = "<group>"; };
 		FH0000020000000000000011 /* FamilyMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMembersView.swift; sourceTree = "<group>"; };
 		FH0000020000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -185,6 +189,7 @@
 				FH0000020000000000000004 /* MealPlan.swift */,
 				FH0000020000000000000005 /* GroceryItem.swift */,
 				FH0000020000000000000006 /* Chore.swift */,
+				FH00000200000000000000A7 /* BoardNote.swift */,
 				FH0000020000000000000016 /* VoiceMemo.swift */,
 				FH000002000000000000001C /* PendingEmailImport.swift */,
 				FH000002000000000000001E /* BudgetItem.swift */,
@@ -260,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				FH000002000000000000000F /* ChoresView.swift */,
+				FH00000200000000000000A8 /* WhiteboardViews.swift */,
 				FH0000020000000000000010 /* AddChoreView.swift */,
 				FH0000020000000000000035 /* ChoreDetailView.swift */,
 			);
@@ -412,6 +418,8 @@
 				FH000001000000000000000D /* GroceryListView.swift in Sources */,
 				FH000001000000000000000E /* AddGroceryItemView.swift in Sources */,
 				FH000001000000000000000F /* ChoresView.swift in Sources */,
+				FH00000100000000000000A7 /* BoardNote.swift in Sources */,
+				FH00000100000000000000A8 /* WhiteboardViews.swift in Sources */,
 				FH0000010000000000000010 /* AddChoreView.swift in Sources */,
 				FH0000010000000000000011 /* FamilyMembersView.swift in Sources */,
 				FH0000010000000000000013 /* MemberAvatar.swift in Sources */,

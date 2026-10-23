@@ -30,6 +30,7 @@ struct FamilyHubApp: App {
             Recipe.self,
             FamilyMembership.self,
             FavoriteWeeklyMealPlan.self,
+            BoardNote.self,
         ])
         let configuration = ModelConfiguration(
             schema: schema,

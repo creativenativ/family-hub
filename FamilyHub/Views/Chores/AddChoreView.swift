@@ -7,6 +7,8 @@ struct AddChoreView: View {
 
     let members: [FamilyMember]
     var initialMember: FamilyMember? = nil
+    /// Ink picked from the whiteboard's marker tray.
+    var markerColorHex: String = ""
 
     @State private var title = ""
     @State private var notes = ""
@@ -197,6 +199,7 @@ struct AddChoreView: View {
             remindersEnabled: remindersEnabled && selectedMember != nil,
             components: components
         )
+        chore.markerColorHex = markerColorHex
         modelContext.insert(chore)
 
         Task {

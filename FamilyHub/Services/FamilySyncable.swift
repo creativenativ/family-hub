@@ -233,6 +233,9 @@ extension Chore: FamilySyncable {
         fields.set("remindersEnabled", remindersEnabled)
         fields["componentsData"] = .data(componentsData)
         fields.set("assignedMemberID", assignedMember?.id)
+        fields.set("boardX", boardX)
+        fields.set("boardY", boardY)
+        fields.set("markerColorHex", markerColorHex)
     }
 
     func applySyncFields(from record: SyncRecordReader, lookup: SyncLookup) {
@@ -247,6 +250,29 @@ extension Chore: FamilySyncable {
             componentsData = data
         }
         assignedMember = lookup.member(record.uuid("assignedMemberID"))
+        boardX = record.double("boardX") ?? boardX
+        boardY = record.double("boardY") ?? boardY
+        markerColorHex = record.string("markerColorHex") ?? markerColorHex
+    }
+}
+
+extension BoardNote: FamilySyncable {
+    static let syncRecordType = "SharedBoardNote"
+    static let syncPrefix = "boardNote"
+    static func makeForSync() -> BoardNote { BoardNote(text: "", boardX: 0, boardY: 0) }
+
+    func encodeSyncFields(into fields: inout SyncFields) {
+        fields.set("text", text)
+        fields.set("boardX", boardX)
+        fields.set("boardY", boardY)
+        fields.set("colorHex", colorHex)
+    }
+
+    func applySyncFields(from record: SyncRecordReader, lookup: SyncLookup) {
+        text = record.string("text") ?? text
+        boardX = record.double("boardX") ?? boardX
+        boardY = record.double("boardY") ?? boardY
+        colorHex = record.string("colorHex") ?? colorHex
     }
 }
 
