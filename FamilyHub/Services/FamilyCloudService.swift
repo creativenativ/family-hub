@@ -455,13 +455,8 @@ final class FamilyCloudService {
     }
 
     private static func roleLabel(_ role: CKShare.ParticipantRole) -> String {
-        switch role {
-        case .owner: "Owner"
-        case .privateUser: "Member"
-        case .publicUser: "Member"
-        case .unknown: "Member"
-        @unknown default: "Member"
-        }
+        // Every role other than owner reads as "Member", including roles added in newer iOS versions.
+        role == .owner ? "Owner" : "Member"
     }
 
     private static func acceptanceLabel(_ status: CKShare.ParticipantAcceptanceStatus) -> String {

@@ -174,7 +174,6 @@ enum EmailEventParser {
             if daysFromNow < -14 { continue }
             if daysFromNow > 365 { continue }
 
-            let hasTime = match.timeZone != nil || match.duration > 0 || looksLikeTimedDate(match, in: text)
             // NSDataDetector often sets time even for date-only; check hour components from match
             let components = Calendar.current.dateComponents([.hour, .minute], from: date)
             let hour = components.hour ?? 0

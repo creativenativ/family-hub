@@ -576,7 +576,6 @@ enum CalendarSpanLayout {
         monthDays: [Date],
         tribeTags: [String: TribeTag] = [:]
     ) -> [Date: [CalendarBarItem]] {
-        let calendar = Calendar.current
         var result: [Date: [CalendarBarItem]] = [:]
         for day in monthDays {
             result[day.startOfDay] = []
